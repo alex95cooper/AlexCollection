@@ -61,9 +61,22 @@ namespace AlexList
             Array.Clear(elementsArray);
         }
 
-        public void Contains()
+        public bool Contains(T value)
         {
-            
+            if (Array.IndexOf(elementsArray, value) == -1)
+                return false;
+            else
+                return true;
+        }
+
+        public int FindIndex(Predicate<T> predicate)
+        {
+            return Array.FindIndex(elementsArray, predicate);
+        }
+
+        public int FindLastIndex(Predicate<T> predicate)
+        {
+            return Array.FindLastIndex(elementsArray, predicate);
         }
 
         public int IndexOf(T value)
@@ -101,7 +114,7 @@ namespace AlexList
 
         public void Sort()
         {
-
+            Array.Sort(elementsArray);
         }
     }
 }
