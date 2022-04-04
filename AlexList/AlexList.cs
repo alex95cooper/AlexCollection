@@ -56,9 +56,69 @@ namespace AlexList
             elementsArray[^1] = value;
         }
 
+        public int BinarySearch(T value)
+        {
+            int lowerRangeLimit = 0;
+            int upperRangeLimit = elementsArray.Length - 1;
+
+            return RecursionSearch(lowerRangeLimit, upperRangeLimit, value);
+        }
+
+        private int Compare(Object? x, Object? y)
+        {
+            return -new CaseInsensitiveComparer().Compare(y, x);
+        }
+
+        private int RecursionSearch(int lowerRangeLimit, int upperRangeLimit, T value)
+        {
+            int rangeOfSearching = upperRangeLimit - lowerRangeLimit;
+
+            if (rangeOfSearching == 0 || rangeOfSearching == 1)
+                return -(upperRangeLimit + 1);
+
+            int middleOfRange = (lowerRangeLimit + (rangeOfSearching / 2));
+
+            if (Compare(value, elementsArray[lowerRangeLimit]) == 0)
+            {
+                return lowerRangeLimit;
+            }
+            else if (Compare(value, elementsArray[middleOfRange]) == 0)
+            {
+                return middleOfRange;
+            }
+            else if (Compare(value, elementsArray[upperRangeLimit]) == 0)
+            {
+                return upperRangeLimit;
+            }
+            else if (Compare(value, elementsArray[lowerRangeLimit]) < 0)
+            {
+                return -1;
+            }
+            else if (Compare(value, elementsArray[upperRangeLimit]) > 0)
+            {
+                return -(upperRangeLimit + 1);
+            }
+            else if (Compare(value, elementsArray[lowerRangeLimit]) > 0 && Compare(value, elementsArray[middleOfRange]) < 0)
+            {
+                upperRangeLimit = middleOfRange;
+                return RecursionSearch(lowerRangeLimit, upperRangeLimit, value);
+            }
+            else if (Compare(value, elementsArray[middleOfRange]) > 0 && Compare(value, elementsArray[upperRangeLimit]) < 0)
+            {
+                lowerRangeLimit = middleOfRange;
+                return RecursionSearch(lowerRangeLimit, upperRangeLimit, value);
+            }
+            else
+            {
+                return -1;
+            }
+
+           
+        }
+
         public void Clear()
         {
-            Array.Clear(elementsArray);
+            elementsArray = Array.Empty<T>();
         }
 
         public bool Contains(T value)
