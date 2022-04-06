@@ -30,7 +30,7 @@ namespace AlexList
             }
         }
 
-        public object Current
+        public object? Current
         {
             get
             {
@@ -112,8 +112,6 @@ namespace AlexList
             {
                 return -1;
             }
-
-           
         }
 
         public void Clear()
@@ -123,7 +121,7 @@ namespace AlexList
 
         public bool Contains(T value)
         {
-            if (Array.IndexOf(elementsArray, value) == -1)
+            if (IndexOf(value) == -1)
                 return false;
             else
                 return true;
@@ -131,17 +129,41 @@ namespace AlexList
 
         public int FindIndex(Predicate<T> predicate)
         {
-            return Array.FindIndex(elementsArray, predicate);
+            for (int counter = 0; counter < elementsArray.Length - 1; counter++)
+            {
+                if (predicate.Invoke(elementsArray[counter]))
+                {
+                    return counter;
+                }
+            }
+
+            return -1;
         }
 
         public int FindLastIndex(Predicate<T> predicate)
         {
-            return Array.FindLastIndex(elementsArray, predicate);
+            for (int counter = elementsArray.Length - 1; counter > -1; counter--)
+            {
+                if (predicate.Invoke(elementsArray[counter]))
+                {
+                    return counter;
+                }
+            }
+
+            return -1;
         }
 
         public int IndexOf(T value)
         {
-            return Array.IndexOf(elementsArray, value);
+            for (int counter = 0; counter < elementsArray.Length - 1; counter++)
+            {
+                if (Compare(value, elementsArray[counter]) == 0)
+                {
+                    return counter;
+                }
+            }
+
+            return -1;
         }
 
         public void Insert(T value, int index)
@@ -158,7 +180,7 @@ namespace AlexList
 
         public void Remove(T value)
         {
-            int index = Array.IndexOf(elementsArray, value);
+            int index = IndexOf(value);
             RemoveAt(index);
         }
 
@@ -174,7 +196,23 @@ namespace AlexList
 
         public void Sort()
         {
-            Array.Sort(elementsArray);
+            bool arrayIsNotSorted;
+
+            do
+            {
+                arrayIsNotSorted = false;
+
+                for (int counter = 0; counter < elementsArray.Length - 1; counter++)
+                {
+                    if (Compare(elementsArray[counter], elementsArray[counter + 1]) > 0)
+                    {
+                        Insert(elementsArray[counter + 1], counter);
+                        RemoveAt(counter + 2);
+                        arrayIsNotSorted = true;
+                    }
+                }
+            }
+            while (arrayIsNotSorted == true);
         }
     }
 }
