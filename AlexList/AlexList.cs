@@ -47,11 +47,33 @@ namespace AlexList
             return this;
         }
 
-        #endregion Enumerable
+        #endregion
 
         public void Add(T value)
         {
-            elementsArray = elementsArray.Append(value).ToArray();
+            ArrayResize(elementsArray.Length + 1);
+            elementsArray[^1] = value;
+        }
+
+        private void ArrayResize(int newSize)
+        {
+            T[] interimElementsArray = new T[newSize];
+
+            if (elementsArray.Length > 0)
+            {
+                if (elementsArray.Length < newSize || elementsArray.Length == newSize)
+                {
+                    for (int counter = 0; counter < elementsArray.Length; counter++)
+                        interimElementsArray[counter] = elementsArray[counter];
+                }
+                else if (elementsArray.Length > newSize)
+                {
+                    for (int counter = 0; counter < newSize; counter++)
+                        interimElementsArray[counter] = elementsArray[counter];
+                }                
+            }
+
+            elementsArray = interimElementsArray;
         }
 
         public int BinarySearch(T value)
@@ -166,7 +188,7 @@ namespace AlexList
 
         public void Insert(T value, int index)
         {
-            elementsArray = elementsArray.Append(value).ToArray();
+            ArrayResize(elementsArray.Length + 1);
 
             for (int counter = elementsArray.Length - 2; counter >= index; counter--)
             {
@@ -189,7 +211,7 @@ namespace AlexList
                 elementsArray[counter] = elementsArray[counter + 1];
             }
 
-            elementsArray = elementsArray.SkipLast(1).ToArray();
+            ArrayResize(elementsArray.Length - 1);
         }
 
         public void Sort()

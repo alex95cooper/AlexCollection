@@ -45,12 +45,12 @@ guys.Add(new Guy { Name = "Evgeniy", Age = 36, Height = 196 });
 guys.Add(new Guy { Name = "Yaroslav", Age = 13, Height = 174 });
 guys.Add(new Guy { Name = "Oleg", Age = 20, Height = 173 });
 guys.Add(new Guy { Name = "Andrey", Age = 55, Height = 174 });
-guys.Add(new Guy { Name = "Roman", Age = 32, Height = 180  });
-guys.Add(new Guy { Name = "Vetal", Age = 33, Height = 179  });
+guys.Add(new Guy { Name = "Roman", Age = 32, Height = 180 });
+guys.Add(new Guy { Name = "Vetal", Age = 33, Height = 179 });
 
 Console.WriteLine(guys.FindIndex(x => x.Name == "Oleg"));
 
-guys.Insert(new Guy { Name = " Valera", Age = 31, Height = 181 }, 5);
+guys.Insert(new Guy { Name = "Valera", Age = 31, Height = 181 }, 5);
 
 Console.WriteLine();
 
