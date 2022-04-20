@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlexList", "AlexList\AlexList.csproj", "{13C0A23C-0850-4F9B-BBEC-9513B932AB8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingAlexList", "TestingAlexList\TestingAlexList.csproj", "{B55C0B83-AE16-413B-9687-7D614BFD3C7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestingAlexCollections", "TestingAlexList\TestingAlexCollections.csproj", "{B55C0B83-AE16-413B-9687-7D614BFD3C7C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
