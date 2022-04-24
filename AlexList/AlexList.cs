@@ -4,20 +4,22 @@
     {
         private const string ArgumentExceptMessage = "The collection does not contain the entered index or value.";
 
-        private int _indexOfElement = -1;
+        private int _arraySize;
+
+        private int _indexOfElement = -1;        
 
         private T[] _elementsArray;
 
         public AlexList()
         {
-            _elementsArray = new T[0];
+            Clear();
         }
 
         #region Enumerable
 
         public bool MoveNext()
         {
-            if (_indexOfElement < _elementsArray.Length - 1)
+            if (_indexOfElement < _arraySize - 1)
             {
                 _indexOfElement++;
                 return true;
@@ -51,21 +53,22 @@
 
         public void Add(T value)
         {
-            ArrayResize(_elementsArray.Length + 1);
-            _elementsArray[^1] = value;
+            ArrayResize(_arraySize + 1);
+            _elementsArray[_arraySize - 1] = value;
         }
 
         public int BinarySearch(T value, IAlexComparer<T> comparer = null)
         {
             CheckComparerReference(comparer);
             int lowerRangeLimit = 0;
-            int upperRangeLimit = _elementsArray.Length - 1;
+            int upperRangeLimit = _arraySize - 1;
             return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value, comparer);
         }
 
         public void Clear()
         {
-            _elementsArray = new T[0];
+            _elementsArray = new T[100];
+            _arraySize = 0;
         }
 
         public bool Contains(T value, IAlexComparer<T> comparer = null)
@@ -79,7 +82,7 @@
 
         public int FindIndex(Predicate<T> predicate)
         {
-            for (int counter = 0; counter < _elementsArray.Length - 1; counter++)
+            for (int counter = 0; counter < _arraySize - 1; counter++)
             {
                 if (predicate.Invoke(_elementsArray[counter]))
                 {
@@ -92,7 +95,7 @@
 
         public int FindLastIndex(Predicate<T> predicate)
         {
-            for (int counter = _elementsArray.Length - 1; counter > -1; counter--)
+            for (int counter = _arraySize - 1; counter > -1; counter--)
             {
                 if (predicate.Invoke(_elementsArray[counter]))
                 {
@@ -106,7 +109,7 @@
         public int IndexOf(T value, IAlexComparer<T> comparer = null)
         {
             CheckComparerReference(comparer);
-            for (int counter = 0; counter < _elementsArray.Length - 1; counter++)
+            for (int counter = 0; counter < _arraySize - 1; counter++)
             {
                 if (comparer.Compare(value, _elementsArray[counter]) == 0)
                 {
@@ -119,18 +122,18 @@
 
         public void Insert(T value, int index)
         {
-            if (index >= 0 && index < _elementsArray.Length)
+            if (index >= 0 && index < _arraySize)
             {
-                ArrayResize(_elementsArray.Length + 1);
+                ArrayResize(_arraySize + 1);
 
-                for (int counter = _elementsArray.Length - 2; counter >= index; counter--)
+                for (int counter = _arraySize - 2; counter >= index; counter--)
                 {
                     _elementsArray[counter + 1] = _elementsArray[counter];
                 }
 
                 _elementsArray[index] = value;
             }
-            else if (index == _elementsArray.Length)
+            else if (index == _arraySize)
             {
                 Add(value);
             }
@@ -148,14 +151,14 @@
 
         public void RemoveAt(int index)
         {
-            if (index >= 0 && index < _elementsArray.Length)
+            if (index >= 0 && index < _arraySize)
             {
-                for (int counter = index; counter < _elementsArray.Length - 1; counter++)
+                for (int counter = index; counter < _arraySize; counter++)
                 {
                     _elementsArray[counter] = _elementsArray[counter + 1];
                 }
 
-                ArrayResize(_elementsArray.Length - 1);
+                ArrayResize(_arraySize - 1);
             }
             else
             {
@@ -172,7 +175,7 @@
             {
                 arrayIsNotSorted = false;
 
-                for (int counter = 0; counter < _elementsArray.Length - 1; counter++)
+                for (int counter = 0; counter < _arraySize; counter++)
                 {
                     if (comparer.Compare(_elementsArray[counter], _elementsArray[counter + 1]) > 0)
                     {
@@ -188,19 +191,13 @@
 
         private void ArrayResize(int newSize)
         {
-            T[] interimElementsArray = new T[newSize];
-
-            if (_elementsArray.Length > 0)
+            _arraySize = newSize;
+            if (newSize > _elementsArray.Length)
             {
-                if (_elementsArray.Length < newSize)
-                    AssignValuesToNewArray(interimElementsArray, _elementsArray.Length);
-                else if (_elementsArray.Length > newSize)
-                    AssignValuesToNewArray(interimElementsArray, newSize);
-                else
-                    return;
+                T[] interimElementsArray = new T[_elementsArray.Length + 100];
+                AssignValuesToNewArray(interimElementsArray, newSize);
+                _elementsArray = interimElementsArray;
             }
-
-            _elementsArray = interimElementsArray;
         }
 
         private void AssignValuesToNewArray(T[] interimElementsArray, int size)
