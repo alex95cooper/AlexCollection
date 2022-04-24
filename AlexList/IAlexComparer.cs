@@ -1,7 +1,7 @@
 ﻿namespace AlexList
 {
-    internal interface IAlexComparer
+    public interface IAlexComparer<T>
     {
-        int Compare(object x, object y);
+        int Compare(T x, T y);
     }
 }

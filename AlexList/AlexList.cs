@@ -1,15 +1,13 @@
-﻿using System.Collections;
-
-namespace AlexList
+﻿namespace AlexList
 {
     public class AlexList<T>
-    {        
+    {
         private const string ArgumentExceptMessage = "The collection does not contain the entered index or value.";
 
         private int _indexOfElement = -1;
 
         private T[] _elementsArray;
-        
+
         public AlexList()
         {
             _elementsArray = new T[0];
@@ -31,7 +29,7 @@ namespace AlexList
             }
         }
 
-        public object? Current
+        public object Current
         {
             get
             {
@@ -57,12 +55,12 @@ namespace AlexList
             _elementsArray[^1] = value;
         }
 
-        public int BinarySearch(T value)
+        public int BinarySearch(T value, IAlexComparer<T> comparer = null)
         {
+            CheckComparerReference(comparer);
             int lowerRangeLimit = 0;
             int upperRangeLimit = _elementsArray.Length - 1;
-
-            return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value);
+            return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value, comparer);
         }
 
         public void Clear()
@@ -70,9 +68,10 @@ namespace AlexList
             _elementsArray = new T[0];
         }
 
-        public bool Contains(T value)
+        public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
-            if (IndexOf(value) == -1)
+            CheckComparerReference(comparer);
+            if (IndexOf(value, comparer) == -1)
                 return false;
             else
                 return true;
@@ -104,11 +103,12 @@ namespace AlexList
             return -1;
         }
 
-        public int IndexOf(T value)
+        public int IndexOf(T value, IAlexComparer<T> comparer = null)
         {
+            CheckComparerReference(comparer);
             for (int counter = 0; counter < _elementsArray.Length - 1; counter++)
             {
-                if (Compare(value, _elementsArray[counter]) == 0)
+                if (comparer.Compare(value, _elementsArray[counter]) == 0)
                 {
                     return counter;
                 }
@@ -163,17 +163,18 @@ namespace AlexList
             }
         }
 
-        public void Sort()
+        public void Sort(IAlexComparer<T> comparer = null)
         {
-            bool arrayIsNotSorted;
+            CheckComparerReference(comparer);
 
+            bool arrayIsNotSorted;
             do
             {
                 arrayIsNotSorted = false;
 
                 for (int counter = 0; counter < _elementsArray.Length - 1; counter++)
                 {
-                    if (Compare(_elementsArray[counter], _elementsArray[counter + 1]) > 0)
+                    if (comparer.Compare(_elementsArray[counter], _elementsArray[counter + 1]) > 0)
                     {
                         T interimValue = _elementsArray[counter];
                         _elementsArray[counter] = _elementsArray[counter + 1];
@@ -191,12 +192,12 @@ namespace AlexList
 
             if (_elementsArray.Length > 0)
             {
-                if (_elementsArray.Length < newSize)                
-                    AssignValuesToNewArray(interimElementsArray, _elementsArray.Length);                
-                else if (_elementsArray.Length > newSize)                
-                    AssignValuesToNewArray(interimElementsArray, newSize);                
-                else                
-                    return;                                    
+                if (_elementsArray.Length < newSize)
+                    AssignValuesToNewArray(interimElementsArray, _elementsArray.Length);
+                else if (_elementsArray.Length > newSize)
+                    AssignValuesToNewArray(interimElementsArray, newSize);
+                else
+                    return;
             }
 
             _elementsArray = interimElementsArray;
@@ -207,13 +208,18 @@ namespace AlexList
             for (int counter = 0; counter < size; counter++)
                 interimElementsArray[counter] = _elementsArray[counter];
         }
-
-        private int Compare(Object? x, Object? y)
+        
+        private static IAlexComparer<T> CheckComparerReference(IAlexComparer<T> comparer)
         {
-            return -new CaseInsensitiveComparer().Compare(y, x);
+            if (comparer == null)
+            {
+                comparer = new DefaultAlexComparer<T>();
+            }
+            
+            return comparer;
         }
 
-        private int RecursionBinarySearch(int lowerRangeLimit, int upperRangeLimit, T value)
+        private int RecursionBinarySearch(int lowerRangeLimit, int upperRangeLimit, T value, IAlexComparer<T> comparer)
         {
             int rangeOfSearching = upperRangeLimit - lowerRangeLimit;
 
@@ -222,35 +228,35 @@ namespace AlexList
 
             int middleOfRange = (lowerRangeLimit + (rangeOfSearching / 2));
 
-            if (Compare(value, _elementsArray[lowerRangeLimit]) == 0)
+            if (comparer.Compare(value, _elementsArray[lowerRangeLimit]) == 0)
             {
                 return lowerRangeLimit;
             }
-            else if (Compare(value, _elementsArray[middleOfRange]) == 0)
+            else if (comparer.Compare(value, _elementsArray[middleOfRange]) == 0)
             {
                 return middleOfRange;
             }
-            else if (Compare(value, _elementsArray[upperRangeLimit]) == 0)
+            else if (comparer.Compare(value, _elementsArray[upperRangeLimit]) == 0)
             {
                 return upperRangeLimit;
             }
-            else if (Compare(value, _elementsArray[lowerRangeLimit]) < 0)
+            else if (comparer.Compare(value, _elementsArray[lowerRangeLimit]) < 0)
             {
                 return -1;
             }
-            else if (Compare(value, _elementsArray[upperRangeLimit]) > 0)
+            else if (comparer.Compare(value, _elementsArray[upperRangeLimit]) > 0)
             {
                 return -(upperRangeLimit + 1);
             }
-            else if (Compare(value, _elementsArray[lowerRangeLimit]) > 0 && Compare(value, _elementsArray[middleOfRange]) < 0)
+            else if (comparer.Compare(value, _elementsArray[lowerRangeLimit]) > 0 && comparer.Compare(value, _elementsArray[middleOfRange]) < 0)
             {
                 upperRangeLimit = middleOfRange;
-                return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value);
+                return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value, comparer);
             }
-            else if (Compare(value, _elementsArray[middleOfRange]) > 0 && Compare(value, _elementsArray[upperRangeLimit]) < 0)
+            else if (comparer.Compare(value, _elementsArray[middleOfRange]) > 0 && comparer.Compare(value, _elementsArray[upperRangeLimit]) < 0)
             {
                 lowerRangeLimit = middleOfRange;
-                return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value);
+                return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value, comparer);
             }
             else
             {

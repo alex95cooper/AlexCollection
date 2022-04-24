@@ -1,6 +1,6 @@
 ﻿using AlexList;
 
-AlexList<int> alexList = new AlexList<int>();
+AlexList<int> alexList = new();
 alexList.Add(1);
 alexList.Add(7);
 alexList.Add(5);
@@ -38,7 +38,7 @@ foreach (int i in alexList)
 
 Console.WriteLine();
 
-AlexList<Guy> guys = new AlexList<Guy>();
+AlexList<Guy> guys = new();
 guys.Add(new Guy { Name = "Alexey", Age = 26, Height = 175 });
 guys.Add(new Guy { Name = "Sanek", Age = 45, Height = 179 });
 guys.Add(new Guy { Name = "Evgeniy", Age = 36, Height = 196 });
