@@ -18,6 +18,8 @@ alexList.Sort();
 
 Console.WriteLine();
 
+Console.WriteLine($"Index of nine is {alexList.IndexOf(9)}");
+
 Console.Write("BinarySearch (AlexList sort!!!) : ");
 Console.Write(alexList.BinarySearch(1));
 Console.Write(alexList.BinarySearch(2));

@@ -6,7 +6,7 @@
 
         private int _arraySize;
 
-        private int _indexOfElement = -1;        
+        private int _indexOfElement = -1;
 
         private T[] _elementsArray;
 
@@ -73,7 +73,7 @@
 
         public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
-            CheckComparerReference(comparer);
+            comparer = CheckComparerReference(comparer);
             if (IndexOf(value, comparer) == -1)
                 return false;
             else
@@ -82,7 +82,7 @@
 
         public int FindIndex(Predicate<T> predicate)
         {
-            for (int counter = 0; counter < _arraySize - 1; counter++)
+            for (int counter = 0; counter < _arraySize; counter++)
             {
                 if (predicate.Invoke(_elementsArray[counter]))
                 {
@@ -108,8 +108,9 @@
 
         public int IndexOf(T value, IAlexComparer<T> comparer = null)
         {
-            CheckComparerReference(comparer);
-            for (int counter = 0; counter < _arraySize - 1; counter++)
+            comparer = CheckComparerReference(comparer);
+
+            for (int counter = 0; counter < _arraySize; counter++)
             {
                 if (comparer.Compare(value, _elementsArray[counter]) == 0)
                 {
@@ -205,7 +206,7 @@
             for (int counter = 0; counter < size; counter++)
                 interimElementsArray[counter] = _elementsArray[counter];
         }
-        
+
         private static IAlexComparer<T> CheckComparerReference(IAlexComparer<T> comparer)
         {
             if (comparer == null)
