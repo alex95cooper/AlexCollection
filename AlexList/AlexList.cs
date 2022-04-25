@@ -59,7 +59,7 @@
 
         public int BinarySearch(T value, IAlexComparer<T> comparer = null)
         {
-            CheckComparerReference(comparer);
+            comparer = CheckComparerReference(comparer);
             int lowerRangeLimit = 0;
             int upperRangeLimit = _arraySize - 1;
             return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value, comparer);
@@ -168,14 +168,14 @@
 
         public void Sort(IAlexComparer<T> comparer = null)
         {
-            CheckComparerReference(comparer);
+            comparer = CheckComparerReference(comparer);
 
             bool arrayIsNotSorted;
             do
             {
                 arrayIsNotSorted = false;
 
-                for (int counter = 0; counter < _arraySize; counter++)
+                for (int counter = 0; counter < _arraySize - 1; counter++)
                 {
                     if (comparer.Compare(_elementsArray[counter], _elementsArray[counter + 1]) > 0)
                     {
@@ -212,7 +212,7 @@
             {
                 comparer = new DefaultAlexComparer<T>();
             }
-            
+
             return comparer;
         }
 
