@@ -2,7 +2,7 @@
 {
     public class AlexList<T>
     {
-        private const string ArgumentExceptMessage = "The collection does not contain the entered index or value.";
+        private const string WrongIndexExceptionMessage = "The collection does not contain the entered index or value.";
 
         private int _arraySize;
 
@@ -59,7 +59,7 @@
 
         public int BinarySearch(T value, IAlexComparer<T> comparer = null)
         {
-            comparer = CheckComparerReference(comparer);
+            comparer = GetComparerOrDefault(comparer);
             int lowerRangeLimit = 0;
             int upperRangeLimit = _arraySize - 1;
             return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value, comparer);
@@ -73,7 +73,7 @@
 
         public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
-            comparer = CheckComparerReference(comparer);
+            comparer = GetComparerOrDefault(comparer);
             if (IndexOf(value, comparer) == -1)
                 return false;
             else
@@ -108,7 +108,7 @@
 
         public int IndexOf(T value, IAlexComparer<T> comparer = null)
         {
-            comparer = CheckComparerReference(comparer);
+            comparer = GetComparerOrDefault(comparer);
 
             for (int counter = 0; counter < _arraySize; counter++)
             {
@@ -123,7 +123,15 @@
 
         public void Insert(T value, int index)
         {
-            if (index >= 0 && index < _arraySize)
+            if (index < 0 || index > _arraySize)
+            {
+                throw new ArgumentException(WrongIndexExceptionMessage);
+            }
+            else if (index == _arraySize)
+            {
+                Add(value);
+            }
+            else
             {
                 ArrayResize(_arraySize + 1);
 
@@ -133,14 +141,6 @@
                 }
 
                 _elementsArray[index] = value;
-            }
-            else if (index == _arraySize)
-            {
-                Add(value);
-            }
-            else
-            {
-                throw new ArgumentException(ArgumentExceptMessage);
             }
         }
 
@@ -152,24 +152,22 @@
 
         public void RemoveAt(int index)
         {
-            if (index >= 0 && index < _arraySize)
+            if (index < 0 || index >= _arraySize)
             {
-                for (int counter = index; counter < _arraySize; counter++)
-                {
-                    _elementsArray[counter] = _elementsArray[counter + 1];
-                }
+                throw new ArgumentException(WrongIndexExceptionMessage);
+            }
 
-                ArrayResize(_arraySize - 1);
-            }
-            else
+            for (int counter = index; counter < _arraySize; counter++)
             {
-                throw new ArgumentException(ArgumentExceptMessage);
+                _elementsArray[counter] = _elementsArray[counter + 1];
             }
+
+            ArrayResize(_arraySize - 1);
         }
 
         public void Sort(IAlexComparer<T> comparer = null)
         {
-            comparer = CheckComparerReference(comparer);
+            comparer = GetComparerOrDefault(comparer);
 
             bool arrayIsNotSorted;
             do
@@ -207,14 +205,9 @@
                 interimElementsArray[counter] = _elementsArray[counter];
         }
 
-        private static IAlexComparer<T> CheckComparerReference(IAlexComparer<T> comparer)
+        private static IAlexComparer<T> GetComparerOrDefault(IAlexComparer<T> comparer)
         {
-            if (comparer == null)
-            {
-                comparer = new DefaultAlexComparer<T>();
-            }
-
-            return comparer;
+            return comparer ?? new DefaultAlexComparer<T>();
         }
 
         private int RecursionBinarySearch(int lowerRangeLimit, int upperRangeLimit, T value, IAlexComparer<T> comparer)
