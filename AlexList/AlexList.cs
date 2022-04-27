@@ -5,9 +5,7 @@
         private const string WrongIndexExceptionMessage = "The collection does not contain the entered index or value.";
 
         private int _arraySize;
-
         private int _indexOfElement = -1;
-
         private T[] _elementsArray;
 
         public AlexList()
@@ -31,17 +29,17 @@
             }
         }
 
+        public void Reset()
+        {
+            _indexOfElement = -1;
+        }
+
         public object Current
         {
             get
             {
                 return _elementsArray[_indexOfElement];
             }
-        }
-
-        public void Reset()
-        {
-            _indexOfElement = -1;
         }
 
         public AlexList<T> GetEnumerator()
@@ -53,16 +51,14 @@
 
         public void Add(T value)
         {
-            ArrayResize(_arraySize + 1);
+            ResizeArray(_arraySize + 1);
             _elementsArray[_arraySize - 1] = value;
         }
 
         public int BinarySearch(T value, IAlexComparer<T> comparer = null)
         {
             comparer = GetComparerOrDefault(comparer);
-            int lowerRangeLimit = 0;
-            int upperRangeLimit = _arraySize - 1;
-            return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value, comparer);
+            return RecursivelyBinarySearch(value, (0, _arraySize), comparer);
         }
 
         public void Clear()
@@ -133,7 +129,7 @@
             }
             else
             {
-                ArrayResize(_arraySize + 1);
+                ResizeArray(_arraySize + 1);
 
                 for (int counter = _arraySize - 2; counter >= index; counter--)
                 {
@@ -162,7 +158,7 @@
                 _elementsArray[counter] = _elementsArray[counter + 1];
             }
 
-            ArrayResize(_arraySize - 1);
+            ResizeArray(_arraySize - 1);
         }
 
         public void Sort(IAlexComparer<T> comparer = null)
@@ -188,7 +184,7 @@
             while (arrayIsNotSorted == true);
         }
 
-        private void ArrayResize(int newSize)
+        private void ResizeArray(int newSize)
         {
             _arraySize = newSize;
             if (newSize > _elementsArray.Length)
@@ -210,48 +206,35 @@
             return comparer ?? new DefaultAlexComparer<T>();
         }
 
-        private int RecursionBinarySearch(int lowerRangeLimit, int upperRangeLimit, T value, IAlexComparer<T> comparer)
+        private int RecursivelyBinarySearch(T searchValue, (int Index, int Count) searchRange, IAlexComparer<T> comparer)
         {
-            int rangeOfSearching = upperRangeLimit - lowerRangeLimit;
-
-            if (rangeOfSearching == 0 || rangeOfSearching == 1)
-                return -(upperRangeLimit + 1);
-
-            int middleOfRange = (lowerRangeLimit + (rangeOfSearching / 2));
-
-            if (comparer.Compare(value, _elementsArray[lowerRangeLimit]) == 0)
-            {
-                return lowerRangeLimit;
-            }
-            else if (comparer.Compare(value, _elementsArray[middleOfRange]) == 0)
-            {
-                return middleOfRange;
-            }
-            else if (comparer.Compare(value, _elementsArray[upperRangeLimit]) == 0)
-            {
-                return upperRangeLimit;
-            }
-            else if (comparer.Compare(value, _elementsArray[lowerRangeLimit]) < 0)
+            if (searchRange.Count == 0)
             {
                 return -1;
             }
-            else if (comparer.Compare(value, _elementsArray[upperRangeLimit]) > 0)
+            else if (searchRange.Count == 1)
             {
-                return -(upperRangeLimit + 1);
+                int rootArrayIndex = searchRange.Index;
+                return comparer.Compare(searchValue, _elementsArray[rootArrayIndex]) == 0 ? rootArrayIndex : -1;
             }
-            else if (comparer.Compare(value, _elementsArray[lowerRangeLimit]) > 0 && comparer.Compare(value, _elementsArray[middleOfRange]) < 0)
+
+            int halfRangeSize = searchRange.Count / 2;
+            int middleIndex = searchRange.Index + halfRangeSize;
+            int comparerResult = comparer.Compare(searchValue, _elementsArray[middleIndex]);
+
+            if (comparerResult == -1)
             {
-                upperRangeLimit = middleOfRange;
-                return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value, comparer);
+                return RecursivelyBinarySearch(searchValue, (searchRange.Index, halfRangeSize), comparer);
             }
-            else if (comparer.Compare(value, _elementsArray[middleOfRange]) > 0 && comparer.Compare(value, _elementsArray[upperRangeLimit]) < 0)
+            else if (comparerResult == 1)
             {
-                lowerRangeLimit = middleOfRange;
-                return RecursionBinarySearch(lowerRangeLimit, upperRangeLimit, value, comparer);
+                int newRangeIndex = middleIndex + 1;
+                int newRangeCount = searchRange.Count - (halfRangeSize + 1);
+                return RecursivelyBinarySearch(searchValue, (newRangeIndex, newRangeCount), comparer);
             }
             else
             {
-                return -1;
+                return middleIndex;
             }
         }
     }

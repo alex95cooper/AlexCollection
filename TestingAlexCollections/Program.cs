@@ -10,6 +10,18 @@ alexList.Add(3);
 alexList.Add(6);
 alexList.Add(4);
 alexList.Add(8);
+alexList.Add(10);
+alexList.Add(11);
+alexList.Add(12);
+alexList.Add(13);
+alexList.Add(14);
+alexList.Add(15);
+alexList.Add(16);
+alexList.Add(17);
+alexList.Add(18);
+alexList.Add(19);
+alexList.Add(20);
+
 
 foreach (int i in alexList)
     Console.Write(i);
@@ -30,6 +42,27 @@ Console.Write(alexList.BinarySearch(6));
 Console.Write(alexList.BinarySearch(7));
 Console.Write(alexList.BinarySearch(8));
 Console.Write(alexList.BinarySearch(9));
+Console.Write(alexList.BinarySearch(10));
+Console.Write(" ");
+Console.Write(alexList.BinarySearch(11));
+Console.Write(" ");
+Console.Write(alexList.BinarySearch(12));
+Console.Write(" ");
+Console.Write(alexList.BinarySearch(13));
+Console.Write(" ");
+Console.Write(alexList.BinarySearch(14));
+Console.Write(" ");
+Console.Write(alexList.BinarySearch(15));
+Console.Write(" ");
+Console.Write(alexList.BinarySearch(16));
+Console.Write(" ");
+Console.Write(alexList.BinarySearch(17));
+Console.Write(" ");
+Console.Write(alexList.BinarySearch(18));
+Console.Write(" ");
+Console.Write(alexList.BinarySearch(19));
+Console.Write(" ");
+Console.Write(alexList.BinarySearch(20));
 
 alexList.RemoveAt(3);
 
