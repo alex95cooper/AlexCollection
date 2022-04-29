@@ -22,15 +22,44 @@ alexList.Add(18);
 alexList.Add(19);
 alexList.Add(20);
 
+AlexList<string> alexListString = new();
+alexListString.Add("one");
+alexListString.Add("two");
+alexListString.Add("three");
 
 foreach (int i in alexList)
     Console.Write(i);
 
+AlexList<int> alexListInt = new();
+alexListInt.Add(0);
+alexListInt.Add(1);
+alexListInt.Add(1);
+alexListInt.Add(1);
+alexListInt.Add(2);
+alexListInt.Add(2);
+alexListInt.Add(2);
+
 alexList.Sort();
+
+alexList.InsertRange(6,alexListInt);
 
 Console.WriteLine();
 
+foreach (int i in alexList)
+    Console.Write(i);
+
+Console.WriteLine();
+alexList.Sort();
+
+
 Console.WriteLine($"Index of nine is {alexList.IndexOf(9)}");
+
+Console.WriteLine();
+
+foreach (int i in alexList)
+    Console.Write(i);
+
+Console.WriteLine();
 
 Console.Write("BinarySearch (AlexList sort!!!) : ");
 Console.Write(alexList.BinarySearch(1));

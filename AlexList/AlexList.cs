@@ -30,9 +30,11 @@
 
             ResizeArray(_listSise + alexList._listSise);
 
-            int lastArraySize = _listSise - alexList._listSise;
-            for (int counter = lastArraySize; counter < _listSise; counter++)
-                _elementsArray[counter] = alexList._elementsArray[counter - lastArraySize];
+            int lastListSize = _listSise - alexList._listSise;
+            for (int counter = lastListSize; counter < _listSise; counter++)
+            {
+                _elementsArray[counter] = alexList._elementsArray[counter - lastListSize];
+            }
         }
 
         public int BinarySearch(T value, IAlexComparer<T> comparer = null)
@@ -51,9 +53,13 @@
         {
             comparer = GetComparerOrDefault(comparer);
             if (IndexOf(value, comparer) == -1)
+            {
                 return false;
+            }               
             else
+            {
                 return true;
+            }               
         }
 
         public int FindIndex(Predicate<T> predicate)
@@ -120,13 +126,32 @@
             }
         }
 
-        public void InsertRange(AlexList<T> alexList)
+        public void InsertRange(int index, AlexList<T> alexList)
         {
             alexList = GetCollectionOrThrowException(alexList);
 
-            ResizeArray(_listSise + alexList._listSise);
+            if (index < 0 || index > _listSise)
+            {
+                throw new ArgumentException(WrongIndexExceptionMessage);
+            }
+            else if (index == _listSise)
+            {
+                AddRange(alexList);
+            }
+            else
+            {
+                ResizeArray(_listSise + alexList._listSise);
 
-            int lastArraySize = _listSise - alexList._listSise;
+                for (int counter = _listSise - 1; counter >= index + alexList._listSise; counter--)
+                {
+                    _elementsArray[counter] = _elementsArray[counter - alexList._listSise];
+                }
+
+                for (int counter = index; counter < index + alexList._listSise; counter++)
+                {
+                    _elementsArray[counter] = alexList._elementsArray[counter - index];
+                }
+            }
         }
 
         public void Remove(T value)
@@ -197,7 +222,7 @@
 
         private static AlexList<T> GetCollectionOrThrowException(AlexList<T> alexList)
         {
-            return alexList ?? throw new ArgumentNullException(ArgumentNullExceptionMessage);
+            return alexList ?? throw new ArgumentNullException(nameof(alexList), ArgumentNullExceptionMessage);
         }
 
         private static IAlexComparer<T> GetComparerOrDefault(IAlexComparer<T> comparer)
