@@ -2,7 +2,6 @@
 {
     public class AlexList<T>
     {
-        private const string ArgumentNullExceptionMessage = "A null is passed as an argument.";
         private const string WrongIndexExceptionMessage = "The collection does not contain the entered index or value.";
 
         private int _listSise;
@@ -26,7 +25,7 @@
 
         public void AddRange(AlexList<T> alexList)
         {
-            alexList = GetCollectionOrThrowException(alexList);
+            alexList = EnsureAlexListNotNull(alexList);
 
             ResizeArray(_listSise + alexList._listSise);
 
@@ -55,11 +54,11 @@
             if (IndexOf(value, comparer) == -1)
             {
                 return false;
-            }               
+            }
             else
             {
                 return true;
-            }               
+            }
         }
 
         public int FindIndex(Predicate<T> predicate)
@@ -128,7 +127,7 @@
 
         public void InsertRange(int index, AlexList<T> alexList)
         {
-            alexList = GetCollectionOrThrowException(alexList);
+            alexList = EnsureAlexListNotNull(alexList);
 
             if (index < 0 || index > _listSise)
             {
@@ -220,9 +219,9 @@
             _elementsArray = interimElementsArray;
         }
 
-        private static AlexList<T> GetCollectionOrThrowException(AlexList<T> alexList)
+        private static AlexList<T> EnsureAlexListNotNull(AlexList<T> alexList)
         {
-            return alexList ?? throw new ArgumentNullException(nameof(alexList), ArgumentNullExceptionMessage);
+            return alexList ?? throw new ArgumentNullException(nameof(alexList), "A null is passed as an argument.");
         }
 
         private static IAlexComparer<T> GetComparerOrDefault(IAlexComparer<T> comparer)
