@@ -1,6 +1,18 @@
 ﻿using AlexList;
 using AlexLinkedList;
 
+AlexLinkedList<int> linkedList = new();
+linkedList.Add(5);
+linkedList.Add(6);  
+linkedList.Add(7);
+linkedList.Add(8);
+linkedList.Add(9);
+
+foreach (int i in linkedList)
+    Console.WriteLine(i);
+
+Console.WriteLine();
+
 AlexList<int> alexList = new();
 alexList.Add(1);
 alexList.Add(7);
