@@ -7,7 +7,7 @@ namespace AlexLinkedList
         readonly int _listSize;    
         
         private LinkedNode<T> _currentNode;
-        private int _index = 0;
+        private int _indexOfElement = 0;
 
         public AlexLinkedListEnumerator(LinkedNode<T> node, int listSize)
         {
@@ -18,10 +18,10 @@ namespace AlexLinkedList
         public bool MoveNext()
         {
             
-            if (_index < _listSize)
+            if (_indexOfElement < _listSize)
             {
                 _currentNode = _currentNode.NextNode;
-                _index++;
+                _indexOfElement++;
                 return true;
             }
             else 
@@ -33,7 +33,7 @@ namespace AlexLinkedList
 
         public void Reset()
         {
-            _index = 0;
+            _indexOfElement = 0;
         }
 
         public T Current
