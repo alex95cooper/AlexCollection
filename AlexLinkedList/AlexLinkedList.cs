@@ -4,16 +4,39 @@ namespace AlexLinkedList
 {
     public class AlexLinkedList<T> : IEnumerable<T>
     {
+        private int _count;
+        private LinkedNode<T> _first;
+        private LinkedNode<T> _last;
+
         public AlexLinkedList()
         {
-            Count = 0;
-            First = null;
-            Last = null;
+            _count = 0;
+            _first = null;
+            _last = null;
         }
 
-        public int Count { get; set; }
-        public LinkedNode<T> First { get; set; }
-        public LinkedNode<T> Last { get; set; }
+        public int Count 
+        { 
+            get 
+            
+            { 
+                return _count; 
+            } 
+        }
+        public LinkedNode<T> First
+        {
+            get
+            {
+                return _first;
+            }            
+        }
+        public LinkedNode<T> Last
+        {
+            get
+            {
+                return _last;
+            }
+        }
 
         #region Enumerable
 
@@ -39,23 +62,23 @@ namespace AlexLinkedList
             if (Count == 0)
             {
                 LinkedNode<T> newNode = new(value);
-                First = newNode;
-                Last = newNode;
+                _first = newNode;
+                _last = newNode;
             }
             else if (Count == 1)
             {
                 LinkedNode<T> newNode = new(value, First, First);
                 First.PreviousNode = newNode;
                 First.NextNode = newNode;
-                Last = newNode;
+                _last = newNode;
             }
             else if (Count > 1)
             {
                 LinkedNode<T> newNode = GetNodeBetweenLastAndFirst(value);
-                Last = newNode;
+                _last = newNode;
             }
 
-            Count++;
+            _count++;
         }
 
         public void InsertAfter(LinkedNode<T> node, T value)
@@ -66,12 +89,10 @@ namespace AlexLinkedList
             LinkedNode<T> newNode = new(value, node, nextNode);
             node.NextNode = newNode;
             nextNode.PreviousNode = newNode;
-            if (node == Last)
-            {
-                Last = newNode;
-            }
 
-            Count++;
+            CheckCurrentReferenceToLast(node, newNode);
+
+            _count++;
         }
 
         public void InsertBefore(LinkedNode<T> node, T value)
@@ -82,18 +103,29 @@ namespace AlexLinkedList
             LinkedNode<T> newNode = new(value, previousNode, node);
             node.PreviousNode = newNode;
             previousNode.NextNode = newNode;
-            if (node == First)
-            {
-                First = newNode;
-            }
 
-            Count++;
+            CheckCurrentReferenceToFirst(node, newNode);
+
+            _count++;
         }
 
         public void InsertFirst(T value)
         {
-            LinkedNode < T > newNode = GetNodeBetweenLastAndFirst(value);
-            First = newNode;
+            LinkedNode<T> newNode = GetNodeBetweenLastAndFirst(value);
+            _first = newNode;
+        }
+
+        public void Remove(LinkedNode<T> node)
+        {
+            node = EnsureNodeIsInList(node);
+
+            LinkedNode<T> previousNode = node.PreviousNode;
+            LinkedNode<T> nextNode = node.NextNode;
+            nextNode.PreviousNode = previousNode;
+            previousNode.NextNode = nextNode;
+
+            CheckCurrentReferenceToFirst(node, nextNode);
+            CheckCurrentReferenceToLast(node, previousNode);
         }
 
         private LinkedNode<T> EnsureNodeIsInList(LinkedNode<T> node)
@@ -118,6 +150,22 @@ namespace AlexLinkedList
             First.PreviousNode = newNode;
             Last.NextNode = newNode;
             return newNode;
+        }
+
+        private void CheckCurrentReferenceToFirst(LinkedNode<T> currentNode, LinkedNode<T> newNode)
+        {
+            if (currentNode == First)
+            {
+                _first = newNode;
+            }
+        }
+
+        private void CheckCurrentReferenceToLast(LinkedNode<T> currentNode, LinkedNode<T> newNode)
+        {
+            if (currentNode == Last)
+            {
+                _last = newNode;
+            }
         }
     }
 }
