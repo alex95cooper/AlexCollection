@@ -1,4 +1,4 @@
-﻿using AlexLinkedList;
+﻿using AlexCollections;
 
 AlexLinkedList<int> linkedList = new();
 linkedList.Add(5);

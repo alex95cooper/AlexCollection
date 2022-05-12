@@ -38,7 +38,7 @@
 
         public int BinarySearch(T value, IAlexComparer<T> comparer = null)
         {
-            comparer = GetComparerOrDefault(comparer);
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
             return RecursivelyBinarySearch(value, (0, _listSise), comparer);
         }
 
@@ -50,7 +50,7 @@
 
         public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
-            comparer = GetComparerOrDefault(comparer);
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
             if (IndexOf(value, comparer) == -1)
             {
                 return false;
@@ -89,7 +89,7 @@
 
         public int IndexOf(T value, IAlexComparer<T> comparer = null)
         {
-            comparer = GetComparerOrDefault(comparer);
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
             for (int counter = 0; counter < _listSise; counter++)
             {
@@ -176,7 +176,7 @@
 
         public void Sort(IAlexComparer<T> comparer = null)
         {
-            comparer = GetComparerOrDefault(comparer);
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
             bool arrayIsNotSorted;
             do
@@ -224,10 +224,7 @@
             return alexList ?? throw new ArgumentNullException(nameof(alexList), "A null is passed as an argument.");
         }
 
-        private static IAlexComparer<T> GetComparerOrDefault(IAlexComparer<T> comparer)
-        {
-            return comparer ?? new DefaultAlexComparer<T>();
-        }
+
 
         private int RecursivelyBinarySearch(T searchValue, (int Index, int Count) searchRange, IAlexComparer<T> comparer)
         {

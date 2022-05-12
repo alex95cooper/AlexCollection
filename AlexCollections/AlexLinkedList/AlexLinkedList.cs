@@ -10,9 +10,7 @@ namespace AlexCollections
 
         public AlexLinkedList()
         {
-            _count = 0;
-            _first = null;
-            _last = null;
+            Clear();
         }
 
         public int Count 
@@ -81,6 +79,13 @@ namespace AlexCollections
             _count++;
         }
 
+        public void Clear()
+        {
+            _count = 0;
+            _first = null;
+            _last = null;
+        }
+
         public void InsertAfter(LinkedNode<T> node, T value)
         {
             node = EnsureNodeIsInList(node);
@@ -115,17 +120,36 @@ namespace AlexCollections
             _first = newNode;
         }
 
+        public void Remove(T value, IAlexComparer<T> comparer = null)
+        {
+            LinkedNode<T> verificationNode = Last;
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
+
+            for (int i = 0; i < _count; i++)
+            {
+                verificationNode = verificationNode.NextNode;
+                if (comparer.Compare(verificationNode.Value, value) == 0)
+                {
+                    Remove(verificationNode);
+                    return;
+                }
+            }
+        }
+
         public void Remove(LinkedNode<T> node)
         {
             node = EnsureNodeIsInList(node);
+            RemoveNodeInList(node);
+        }
 
-            LinkedNode<T> previousNode = node.PreviousNode;
-            LinkedNode<T> nextNode = node.NextNode;
-            nextNode.PreviousNode = previousNode;
-            previousNode.NextNode = nextNode;
+        public void RemoveFirst()
+        {
+            RemoveNodeInList(First);
+        }
 
-            CheckCurrentReferenceToFirst(node, nextNode);
-            CheckCurrentReferenceToLast(node, previousNode);
+        public void RemuveLast()
+        {
+            RemoveNodeInList(Last);
         }
 
         private LinkedNode<T> EnsureNodeIsInList(LinkedNode<T> node)
@@ -150,6 +174,18 @@ namespace AlexCollections
             First.PreviousNode = newNode;
             Last.NextNode = newNode;
             return newNode;
+        }
+
+        private void RemoveNodeInList(LinkedNode<T> node)
+        {
+            LinkedNode<T> previousNode = node.PreviousNode;
+            LinkedNode<T> nextNode = node.NextNode;
+            nextNode.PreviousNode = previousNode;
+            previousNode.NextNode = nextNode;
+
+            CheckCurrentReferenceToFirst(node, nextNode);
+            CheckCurrentReferenceToLast(node, previousNode);
+            _count--;
         }
 
         private void CheckCurrentReferenceToFirst(LinkedNode<T> currentNode, LinkedNode<T> newNode)

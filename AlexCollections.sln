@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlexList", "AlexList\AlexList.csproj", "{13C0A23C-0850-4F9B-BBEC-9513B932AB8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlexCollections", "AlexCollections\AlexCollections.csproj", "{13C0A23C-0850-4F9B-BBEC-9513B932AB8A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestingAlexCollections", "TestingAlexCollections\TestingAlexCollections.csproj", "{B55C0B83-AE16-413B-9687-7D614BFD3C7C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlexLinkedList", "AlexLinkedList\AlexLinkedList.csproj", "{0362C640-F80A-4169-A2E5-A318D593A06C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{B55C0B83-AE16-413B-9687-7D614BFD3C7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B55C0B83-AE16-413B-9687-7D614BFD3C7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B55C0B83-AE16-413B-9687-7D614BFD3C7C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0362C640-F80A-4169-A2E5-A318D593A06C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0362C640-F80A-4169-A2E5-A318D593A06C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0362C640-F80A-4169-A2E5-A318D593A06C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0362C640-F80A-4169-A2E5-A318D593A06C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
