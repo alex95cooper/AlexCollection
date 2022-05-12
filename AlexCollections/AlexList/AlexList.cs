@@ -224,8 +224,6 @@
             return alexList ?? throw new ArgumentNullException(nameof(alexList), "A null is passed as an argument.");
         }
 
-
-
         private int RecursivelyBinarySearch(T searchValue, (int Index, int Count) searchRange, IAlexComparer<T> comparer)
         {
             if (searchRange.Count == 0)

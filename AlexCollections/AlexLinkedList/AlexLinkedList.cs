@@ -13,20 +13,20 @@ namespace AlexCollections
             Clear();
         }
 
-        public int Count 
-        { 
-            get 
-            
-            { 
-                return _count; 
-            } 
+        public int Count
+        {
+            get
+
+            {
+                return _count;
+            }
         }
         public LinkedNode<T> First
         {
             get
             {
                 return _first;
-            }            
+            }
         }
         public LinkedNode<T> Last
         {
@@ -86,6 +86,57 @@ namespace AlexCollections
             _last = null;
         }
 
+        public bool Contains(T value, IAlexComparer<T> comparer = null)
+        {
+            LinkedNode<T> verificationNode = Last;
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
+
+            for (int counter = 0; counter < _count; counter++)
+            {
+                verificationNode = verificationNode.NextNode;
+                if (comparer.Compare(verificationNode.Value, value) == 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public T GetByIndex(int index)
+        {
+            if (index < 0 || index >= _count)
+            {
+                throw new ArgumentException("The collection does not contain the entered index.");
+            }
+
+            LinkedNode<T> verificationNode = Last;
+
+            for (int counter = 0; counter <= index; counter++)
+            {
+                verificationNode = verificationNode.NextNode;                
+            }
+
+            return verificationNode.Value;
+        }
+
+        public int IndexOf(T value, IAlexComparer<T> comparer = null)
+        {
+            LinkedNode<T> verificationNode = Last;
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
+
+            for (int counter = 0; counter < _count; counter++)
+            {
+                verificationNode = verificationNode.NextNode;
+                if (comparer.Compare(verificationNode.Value, value) == 0)
+                {
+                    return counter;
+                }
+            }
+
+            return -1;
+        }
+
         public void InsertAfter(LinkedNode<T> node, T value)
         {
             node = EnsureNodeIsInList(node);
@@ -125,7 +176,7 @@ namespace AlexCollections
             LinkedNode<T> verificationNode = Last;
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
-            for (int i = 0; i < _count; i++)
+            for (int counter = 0; counter < _count; counter++)
             {
                 verificationNode = verificationNode.NextNode;
                 if (comparer.Compare(verificationNode.Value, value) == 0)
@@ -152,11 +203,37 @@ namespace AlexCollections
             RemoveNodeInList(Last);
         }
 
+        public void Sort(IAlexComparer<T> comparer = null)
+        {
+            LinkedNode<T> verificationNode = Last;
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
+
+            bool arrayIsNotSorted;
+            do
+            {
+                arrayIsNotSorted = false;
+
+                for (int counter = 0; counter < _count - 1; counter++)
+                {
+                    verificationNode = verificationNode.NextNode;
+                    LinkedNode<T> verificationNextNode = verificationNode.NextNode;
+                    if (comparer.Compare(verificationNode.Value, verificationNextNode.Value) > 0)
+                    {
+                        T interimValue = verificationNode.Value;
+                        verificationNode.Value = verificationNextNode.Value;
+                        verificationNextNode.Value = interimValue;
+                        arrayIsNotSorted = true;
+                    }
+                }
+            }
+            while (arrayIsNotSorted == true);
+        }
+
         private LinkedNode<T> EnsureNodeIsInList(LinkedNode<T> node)
         {
             LinkedNode<T> verificationNode = Last;
 
-            for (int i = 0; i < Count; i++)
+            for (int counter = 0; counter < Count; counter++)
             {
                 verificationNode = verificationNode.NextNode;
                 if (node == verificationNode)

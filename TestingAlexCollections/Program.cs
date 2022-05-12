@@ -19,3 +19,6 @@ linkedList.InsertBefore(linkedList.First, 4);
 foreach (int i in linkedList)
     Console.WriteLine(i);
 
+Console.WriteLine(linkedList.Contains(9));
+Console.WriteLine(linkedList.IndexOf(9));
+
