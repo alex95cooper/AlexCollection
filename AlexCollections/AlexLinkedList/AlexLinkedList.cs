@@ -79,6 +79,19 @@ namespace AlexCollections
             _count++;
         }
 
+        public void AddRange(params T[] values)
+        {
+            AlexLinkedList<T> newList = ConvertToAlexLinkedList(values);
+
+            _last.NextNode = newList.First;
+            _first.PreviousNode = newList.Last;
+            newList._first.PreviousNode = _last;
+            newList._last.NextNode = _first;
+
+            _last = newList._last;
+            _count += newList.Count;
+        }
+
         public void Clear()
         {
             _count = 0;
@@ -114,7 +127,7 @@ namespace AlexCollections
 
             for (int counter = 0; counter <= index; counter++)
             {
-                verificationNode = verificationNode.NextNode;                
+                verificationNode = verificationNode.NextNode;
             }
 
             return verificationNode.Value;
@@ -147,7 +160,6 @@ namespace AlexCollections
             nextNode.PreviousNode = newNode;
 
             CheckCurrentReferenceToLast(node, newNode);
-
             _count++;
         }
 
@@ -161,8 +173,35 @@ namespace AlexCollections
             previousNode.NextNode = newNode;
 
             CheckCurrentReferenceToFirst(node, newNode);
-
             _count++;
+        }
+
+        public void InsertRangeAfter(LinkedNode<T> node, params T[] values)
+        {
+            AlexLinkedList<T> newList = ConvertToAlexLinkedList(values);
+
+            LinkedNode<T> nextNode = node.NextNode;
+            node.NextNode = newList._first;
+            nextNode.PreviousNode = newList._last;
+            newList._first.PreviousNode = node;
+            newList._last.NextNode = nextNode;
+
+            CheckCurrentReferenceToLast(node, newList._last);
+            _count += newList.Count;
+        }
+
+        public void InsertRangeBefore(LinkedNode<T> node, params T[] values)
+        {
+            AlexLinkedList<T> newList = ConvertToAlexLinkedList(values);
+
+            LinkedNode<T> previousNode = node.PreviousNode;
+            node.PreviousNode = newList._last;
+            previousNode.NextNode = newList._first;
+            newList._first.PreviousNode = previousNode;
+            newList._last.NextNode = node;
+
+            CheckCurrentReferenceToFirst(node, newList._first);
+            _count += newList.Count;
         }
 
         public void InsertFirst(T value)
@@ -227,6 +266,17 @@ namespace AlexCollections
                 }
             }
             while (arrayIsNotSorted == true);
+        }
+
+        private static AlexLinkedList<T> ConvertToAlexLinkedList(T[] array)
+        {
+            AlexLinkedList<T> newLinkedList = new();
+
+            for (int counter = 0; counter < array.Length - 1; counter++)
+            {
+                newLinkedList.Add(array[counter]);
+            }
+            return newLinkedList;
         }
 
         private LinkedNode<T> EnsureNodeIsInList(LinkedNode<T> node)
