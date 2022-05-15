@@ -5,18 +5,16 @@ namespace AlexCollections
     public class AlexLinkedList<T> : IEnumerable<T>
     {
         private int _count;
-        private LinkedNode<T> _first;
-        private LinkedNode<T> _last;
+        private LinkedNode<T> _head;
 
         public int Count => _count;
-        public LinkedNode<T> First => _first;
-        public LinkedNode<T> Last => _last;
- 
+        public LinkedNode<T> Head => _head;
+
         #region Enumerable
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AlexLinkedListEnumerator<T>(Last, Count);
+            return new AlexLinkedListEnumerator<T>(Head.PreviousNode, Count);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -31,48 +29,44 @@ namespace AlexCollections
             if (Count == 0)
             {
                 LinkedNode<T> newNode = new(value);
-                _first = newNode;
-                _last = newNode;
+                _head = newNode;
             }
             else if (Count == 1)
             {
-                LinkedNode<T> newNode = new(value, First, First);
-                First.PreviousNode = newNode;
-                First.NextNode = newNode;
-                _last = newNode;
+                LinkedNode<T> newNode = new(value, Head, Head);
+                Head.PreviousNode = newNode;
+                Head.NextNode = newNode;
             }
             else if (Count > 1)
             {
-                LinkedNode<T> newNode = GetNodeBetweenLastAndFirst(value);
-                _last = newNode;
+                CreateNodeBetweenLastAndFirst(value);
             }
 
             _count++;
         }
 
-        public void AddRange(params T[] values)
+        public void AddRange(AlexLinkedList<T> values)
         {
-            AlexLinkedList<T> newList = ConvertToAlexLinkedList(values);
+            LinkedNode<T> newLastNode = values.Head.PreviousNode;
+            LinkedNode<T> oldLastNode = Head.PreviousNode;
 
-            _last.NextNode = newList.First;
-            _first.PreviousNode = newList.Last;
-            newList._first.PreviousNode = _last;
-            newList._last.NextNode = _first;
+            oldLastNode.NextNode = values.Head;
+            values._head.PreviousNode = oldLastNode;
+            newLastNode.NextNode = Head;
+            Head.PreviousNode = newLastNode;
 
-            _last = newList._last;
-            _count += newList.Count;
+            _count += values.Count;
         }
 
         public void Clear()
         {
             _count = 0;
-            _first = null;
-            _last = null;
+            _head = null;
         }
 
         public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
-            LinkedNode<T> verificationNode = Last;
+            LinkedNode<T> verificationNode = Head.PreviousNode;
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
             for (int counter = 0; counter < _count; counter++)
@@ -94,7 +88,7 @@ namespace AlexCollections
                 throw new ArgumentException("The collection does not contain the entered index.");
             }
 
-            LinkedNode<T> verificationNode = Last;
+            LinkedNode<T> verificationNode = Head.PreviousNode;
 
             for (int counter = 0; counter <= index; counter++)
             {
@@ -106,7 +100,7 @@ namespace AlexCollections
 
         public int IndexOf(T value, IAlexComparer<T> comparer = null)
         {
-            LinkedNode<T> verificationNode = Last;
+            LinkedNode<T> verificationNode = Head.PreviousNode;
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
             for (int counter = 0; counter < _count; counter++)
@@ -130,7 +124,6 @@ namespace AlexCollections
             node.NextNode = newNode;
             nextNode.PreviousNode = newNode;
 
-            CheckCurrentReferenceToLast(node, newNode);
             _count++;
         }
 
@@ -147,43 +140,40 @@ namespace AlexCollections
             _count++;
         }
 
-        public void InsertRangeAfter(LinkedNode<T> node, params T[] values)
+        public void InsertRangeAfter(LinkedNode<T> node, AlexLinkedList<T> values)
         {
-            AlexLinkedList<T> newList = ConvertToAlexLinkedList(values);
-
             LinkedNode<T> nextNode = node.NextNode;
-            node.NextNode = newList._first;
-            nextNode.PreviousNode = newList._last;
-            newList._first.PreviousNode = node;
-            newList._last.NextNode = nextNode;
+            LinkedNode<T> lastNodeOfValues = values.Head.PreviousNode;
+            node.NextNode = values.Head;
+            nextNode.PreviousNode = lastNodeOfValues;
+            values._head.PreviousNode = node;
+            lastNodeOfValues.NextNode = nextNode;
 
-            CheckCurrentReferenceToLast(node, newList._last);
-            _count += newList.Count;
+            _count += values.Count;
         }
 
-        public void InsertRangeBefore(LinkedNode<T> node, params T[] values)
+        public void InsertRangeBefore(LinkedNode<T> node, AlexLinkedList<T> values)
         {
-            AlexLinkedList<T> newList = ConvertToAlexLinkedList(values);
-
             LinkedNode<T> previousNode = node.PreviousNode;
-            node.PreviousNode = newList._last;
-            previousNode.NextNode = newList._first;
-            newList._first.PreviousNode = previousNode;
-            newList._last.NextNode = node;
+            LinkedNode<T> lastNodeOfValues = values.Head.PreviousNode;
+            node.PreviousNode = lastNodeOfValues;
+            previousNode.NextNode = values.Head;
+            values.Head.PreviousNode = previousNode;
+            lastNodeOfValues.NextNode = node;
 
-            CheckCurrentReferenceToFirst(node, newList._first);
-            _count += newList.Count;
+            CheckCurrentReferenceToFirst(node, values._head);
+            _count += values.Count;
         }
 
         public void InsertFirst(T value)
         {
-            LinkedNode<T> newNode = GetNodeBetweenLastAndFirst(value);
-            _first = newNode;
+            LinkedNode<T> newNode = CreateNodeBetweenLastAndFirst(value);
+            _head = newNode;
         }
 
         public void Remove(T value, IAlexComparer<T> comparer = null)
         {
-            LinkedNode<T> verificationNode = Last;
+            LinkedNode<T> verificationNode = Head.PreviousNode;
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
             for (int counter = 0; counter < _count; counter++)
@@ -205,17 +195,17 @@ namespace AlexCollections
 
         public void RemoveFirst()
         {
-            RemoveNodeInList(First);
+            RemoveNodeInList(Head);
         }
 
         public void RemoveLast()
         {
-            RemoveNodeInList(Last);
+            RemoveNodeInList(Head.PreviousNode);
         }
 
         public void Sort(IAlexComparer<T> comparer = null)
         {
-            LinkedNode<T> verificationNode = Last;
+            LinkedNode<T> verificationNode = Head.PreviousNode;
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
             bool arrayIsNotSorted;
@@ -239,20 +229,9 @@ namespace AlexCollections
             while (arrayIsNotSorted == true);
         }
 
-        private static AlexLinkedList<T> ConvertToAlexLinkedList(T[] array)
-        {
-            AlexLinkedList<T> newLinkedList = new();
-
-            for (int counter = 0; counter < array.Length - 1; counter++)
-            {
-                newLinkedList.Add(array[counter]);
-            }
-            return newLinkedList;
-        }
-
         private LinkedNode<T> EnsureNodeIsInList(LinkedNode<T> node)
         {
-            LinkedNode<T> verificationNode = Last;
+            LinkedNode<T> verificationNode = Head.PreviousNode;
 
             for (int counter = 0; counter < Count; counter++)
             {
@@ -266,11 +245,13 @@ namespace AlexCollections
             throw new ArgumentException("This node is not in the list", nameof(node));
         }
 
-        private LinkedNode<T> GetNodeBetweenLastAndFirst(T value)
+        private LinkedNode<T> CreateNodeBetweenLastAndFirst(T value)
         {
-            LinkedNode<T> newNode = new(value, Last, First);
-            First.PreviousNode = newNode;
-            Last.NextNode = newNode;
+            LinkedNode<T> lastNode = Head.PreviousNode;
+            LinkedNode<T> newNode = new(value, lastNode, Head);
+            Head.PreviousNode = newNode;
+            lastNode.NextNode = newNode;
+
             return newNode;
         }
 
@@ -282,23 +263,14 @@ namespace AlexCollections
             previousNode.NextNode = nextNode;
 
             CheckCurrentReferenceToFirst(node, nextNode);
-            CheckCurrentReferenceToLast(node, previousNode);
             _count--;
         }
 
         private void CheckCurrentReferenceToFirst(LinkedNode<T> currentNode, LinkedNode<T> newNode)
         {
-            if (currentNode == First)
+            if (currentNode == Head)
             {
-                _first = newNode;
-            }
-        }
-
-        private void CheckCurrentReferenceToLast(LinkedNode<T> currentNode, LinkedNode<T> newNode)
-        {
-            if (currentNode == Last)
-            {
-                _last = newNode;
+                _head = newNode;
             }
         }
     }
