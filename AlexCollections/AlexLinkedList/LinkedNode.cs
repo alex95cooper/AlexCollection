@@ -10,7 +10,7 @@
         }
 
         public T Value { get; set; }        
-        public LinkedNode<T> PreviousNode { get; set; }
-        public LinkedNode<T> NextNode { get; set; }
+        public LinkedNode<T> PreviousNode { get; internal set; }
+        public LinkedNode<T> NextNode { get; internal set; }
     }
 }

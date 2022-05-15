@@ -1,6 +1,7 @@
 ﻿using AlexCollections;
 
 AlexLinkedList<int> linkedList = new();
+
 linkedList.Add(5);
 linkedList.Add(6);
 linkedList.Add(7);
@@ -23,4 +24,5 @@ Console.WriteLine();
 
 Console.WriteLine(linkedList.Contains(9));
 Console.WriteLine(linkedList.IndexOf(9));
+
 

@@ -4,7 +4,7 @@ namespace AlexCollections
 {
     public class AlexLinkedListEnumerator<T> : IEnumerator<T>
     {        
-        readonly int _listSize;    
+        private readonly int _listSize;    
         
         private LinkedNode<T> _currentNode;
         private int _indexOfElement = 0;
@@ -16,8 +16,7 @@ namespace AlexCollections
         }
 
         public bool MoveNext()
-        {
-            
+        {            
             if (_indexOfElement < _listSize)
             {
                 _currentNode = _currentNode.NextNode;

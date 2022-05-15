@@ -8,34 +8,10 @@ namespace AlexCollections
         private LinkedNode<T> _first;
         private LinkedNode<T> _last;
 
-        public AlexLinkedList()
-        {
-            Clear();
-        }
-
-        public int Count
-        {
-            get
-
-            {
-                return _count;
-            }
-        }
-        public LinkedNode<T> First
-        {
-            get
-            {
-                return _first;
-            }
-        }
-        public LinkedNode<T> Last
-        {
-            get
-            {
-                return _last;
-            }
-        }
-
+        public int Count => _count;
+        public LinkedNode<T> First => _first;
+        public LinkedNode<T> Last => _last;
+ 
         #region Enumerable
 
         public IEnumerator<T> GetEnumerator()
@@ -43,14 +19,9 @@ namespace AlexCollections
             return new AlexLinkedListEnumerator<T>(Last, Count);
         }
 
-        private IEnumerator GetEnumerator1()
-        {
-            return this.GetEnumerator();
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator1();
+            return GetEnumerator();
         }
 
         #endregion
@@ -237,7 +208,7 @@ namespace AlexCollections
             RemoveNodeInList(First);
         }
 
-        public void RemuveLast()
+        public void RemoveLast()
         {
             RemoveNodeInList(Last);
         }
