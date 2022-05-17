@@ -28,12 +28,12 @@ namespace AlexCollections
         {
             if (Count == 0)
             {
-                LinkedNode<T> newNode = new(value);
+                LinkedNode<T> newNode = new(value, this);
                 _head = newNode;
             }
             else if (Count == 1)
             {
-                LinkedNode<T> newNode = new(value, Head, Head);
+                LinkedNode<T> newNode = new(value, this, Head, Head);
                 Head.PreviousNode = newNode;
                 Head.NextNode = newNode;
             }
@@ -47,6 +47,8 @@ namespace AlexCollections
 
         public void AddRange(AlexLinkedList<T> values)
         {
+            SetBelongingToThisList(values);
+
             LinkedNode<T> newLastNode = values.Head.PreviousNode;
             LinkedNode<T> oldLastNode = Head.PreviousNode;
 
@@ -85,7 +87,7 @@ namespace AlexCollections
         {
             if (index < 0 || index >= _count)
             {
-                throw new ArgumentException("The collection does not contain the entered index.");
+                throw new IndexOutOfRangeException();
             }
 
             LinkedNode<T> verificationNode = Head.PreviousNode;
@@ -120,7 +122,7 @@ namespace AlexCollections
             node = EnsureNodeIsInList(node);
 
             LinkedNode<T> nextNode = node.NextNode;
-            LinkedNode<T> newNode = new(value, node, nextNode);
+            LinkedNode<T> newNode = new(value, this, node, nextNode);
             node.NextNode = newNode;
             nextNode.PreviousNode = newNode;
 
@@ -132,7 +134,7 @@ namespace AlexCollections
             node = EnsureNodeIsInList(node);
 
             LinkedNode<T> previousNode = node.PreviousNode;
-            LinkedNode<T> newNode = new(value, previousNode, node);
+            LinkedNode<T> newNode = new(value, this, previousNode, node);
             node.PreviousNode = newNode;
             previousNode.NextNode = newNode;
 
@@ -142,6 +144,9 @@ namespace AlexCollections
 
         public void InsertRangeAfter(LinkedNode<T> node, AlexLinkedList<T> values)
         {
+            node = EnsureNodeIsInList(node);
+            SetBelongingToThisList(values);
+
             LinkedNode<T> nextNode = node.NextNode;
             LinkedNode<T> lastNodeOfValues = values.Head.PreviousNode;
             node.NextNode = values.Head;
@@ -154,6 +159,9 @@ namespace AlexCollections
 
         public void InsertRangeBefore(LinkedNode<T> node, AlexLinkedList<T> values)
         {
+            node = EnsureNodeIsInList(node);
+            SetBelongingToThisList(values);
+
             LinkedNode<T> previousNode = node.PreviousNode;
             LinkedNode<T> lastNodeOfValues = values.Head.PreviousNode;
             node.PreviousNode = lastNodeOfValues;
@@ -231,15 +239,9 @@ namespace AlexCollections
 
         private LinkedNode<T> EnsureNodeIsInList(LinkedNode<T> node)
         {
-            LinkedNode<T> verificationNode = Head.PreviousNode;
-
-            for (int counter = 0; counter < Count; counter++)
+            if (node.ListContainingNode == this)
             {
-                verificationNode = verificationNode.NextNode;
-                if (node == verificationNode)
-                {
-                    return node;
-                }
+                return node;
             }
 
             throw new ArgumentException("This node is not in the list", nameof(node));
@@ -248,11 +250,22 @@ namespace AlexCollections
         private LinkedNode<T> CreateNodeBetweenLastAndFirst(T value)
         {
             LinkedNode<T> lastNode = Head.PreviousNode;
-            LinkedNode<T> newNode = new(value, lastNode, Head);
+            LinkedNode<T> newNode = new(value, this, lastNode, Head);
             Head.PreviousNode = newNode;
             lastNode.NextNode = newNode;
 
             return newNode;
+        }
+
+        private void SetBelongingToThisList(AlexLinkedList<T> values)
+        {
+            LinkedNode<T> interimNode = values.Head.PreviousNode;
+
+            for (int counter = 0; counter < values.Count; counter++)
+            {
+                interimNode = interimNode.NextNode;
+                interimNode.ListContainingNode = this;
+            }
         }
 
         private void RemoveNodeInList(LinkedNode<T> node)
