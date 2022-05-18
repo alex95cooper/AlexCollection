@@ -15,6 +15,10 @@ namespace AlexCollections
             _listSize = listSize;
         }
 
+        public T Current => _currentNode.Value;
+
+        object IEnumerator.Current => Current;
+
         public bool MoveNext()
         {            
             if (_indexOfElement < _listSize)
@@ -35,22 +39,9 @@ namespace AlexCollections
             _indexOfElement = 0;
         }
 
-        public T Current
-        {
-            get
-            {
-                return _currentNode.Value;
-            }
-        }
-
-        object IEnumerator.Current
-        {
-            get { return Current; }
-        }
-
         void IDisposable.Dispose()
         {
-            GC.SuppressFinalize(this);
+            
         }
     }
 }

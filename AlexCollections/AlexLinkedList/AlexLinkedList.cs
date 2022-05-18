@@ -24,25 +24,29 @@ namespace AlexCollections
 
         #endregion
 
-        public void Add(T value)
+        public LinkedNode<T> Add(T value)
         {
+            LinkedNode<T> newNode;
             if (Count == 0)
             {
-                LinkedNode<T> newNode = new(value, this);
+                newNode = new(value, this);
+                newNode.PreviousNode = newNode;
+                newNode.NextNode = newNode;
                 _head = newNode;
             }
             else if (Count == 1)
             {
-                LinkedNode<T> newNode = new(value, this, Head, Head);
+                newNode = new(value, this, Head, Head);
                 Head.PreviousNode = newNode;
                 Head.NextNode = newNode;
             }
-            else if (Count > 1)
+            else
             {
-                CreateNodeBetweenLastAndFirst(value);
+                newNode = CreateNodeBetweenLastAndFirst(value);
             }
 
             _count++;
+            return newNode;
         }
 
         public void AddRange(AlexLinkedList<T> values)
@@ -68,19 +72,15 @@ namespace AlexCollections
 
         public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
-            LinkedNode<T> verificationNode = Head.PreviousNode;
-            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
-
-            for (int counter = 0; counter < _count; counter++)
+            (_, int index) = GetNodeWithIndex(value, comparer);
+            if (index == -1)
             {
-                verificationNode = verificationNode.NextNode;
-                if (comparer.Compare(verificationNode.Value, value) == 0)
-                {
-                    return true;
-                }
+                return false;
             }
-
-            return false;
+            else
+            {
+                return true;
+            }
         }
 
         public T GetByIndex(int index)
@@ -90,9 +90,9 @@ namespace AlexCollections
                 throw new IndexOutOfRangeException();
             }
 
-            LinkedNode<T> verificationNode = Head.PreviousNode;
+            LinkedNode<T> verificationNode = Head;
 
-            for (int counter = 0; counter <= index; counter++)
+            for (int counter = 0; counter < index; counter++)
             {
                 verificationNode = verificationNode.NextNode;
             }
@@ -102,22 +102,11 @@ namespace AlexCollections
 
         public int IndexOf(T value, IAlexComparer<T> comparer = null)
         {
-            LinkedNode<T> verificationNode = Head.PreviousNode;
-            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
-
-            for (int counter = 0; counter < _count; counter++)
-            {
-                verificationNode = verificationNode.NextNode;
-                if (comparer.Compare(verificationNode.Value, value) == 0)
-                {
-                    return counter;
-                }
-            }
-
-            return -1;
+            (_, int index) = GetNodeWithIndex(value, comparer);
+            return index;
         }
 
-        public void InsertAfter(LinkedNode<T> node, T value)
+        public LinkedNode<T> InsertAfter(LinkedNode<T> node, T value)
         {
             node = EnsureNodeIsInList(node);
 
@@ -127,9 +116,10 @@ namespace AlexCollections
             nextNode.PreviousNode = newNode;
 
             _count++;
+            return newNode;
         }
 
-        public void InsertBefore(LinkedNode<T> node, T value)
+        public LinkedNode<T> InsertBefore(LinkedNode<T> node, T value)
         {
             node = EnsureNodeIsInList(node);
 
@@ -138,8 +128,9 @@ namespace AlexCollections
             node.PreviousNode = newNode;
             previousNode.NextNode = newNode;
 
-            CheckCurrentReferenceToFirst(node, newNode);
+            ShiftHeadIfNeeded(node, newNode);
             _count++;
+            return newNode;
         }
 
         public void InsertRangeAfter(LinkedNode<T> node, AlexLinkedList<T> values)
@@ -169,29 +160,25 @@ namespace AlexCollections
             values.Head.PreviousNode = previousNode;
             lastNodeOfValues.NextNode = node;
 
-            CheckCurrentReferenceToFirst(node, values._head);
+            ShiftHeadIfNeeded(node, values._head);
             _count += values.Count;
         }
 
-        public void InsertFirst(T value)
+        public LinkedNode<T> InsertFirst(T value)
         {
             LinkedNode<T> newNode = CreateNodeBetweenLastAndFirst(value);
+            _count++;
             _head = newNode;
+            return newNode;
         }
 
         public void Remove(T value, IAlexComparer<T> comparer = null)
         {
-            LinkedNode<T> verificationNode = Head.PreviousNode;
-            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
+            (LinkedNode<T> node, _) = GetNodeWithIndex(value, comparer);
 
-            for (int counter = 0; counter < _count; counter++)
+            if (node != null)
             {
-                verificationNode = verificationNode.NextNode;
-                if (comparer.Compare(verificationNode.Value, value) == 0)
-                {
-                    Remove(verificationNode);
-                    return;
-                }
+                Remove(node);
             }
         }
 
@@ -213,17 +200,14 @@ namespace AlexCollections
 
         public void Sort(IAlexComparer<T> comparer = null)
         {
-            LinkedNode<T> verificationNode = Head.PreviousNode;
+            LinkedNode<T> verificationNode = Head;
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
-            bool arrayIsNotSorted;
+            bool arrayIsNotSorted = false;
             do
             {
-                arrayIsNotSorted = false;
-
                 for (int counter = 0; counter < _count - 1; counter++)
                 {
-                    verificationNode = verificationNode.NextNode;
                     LinkedNode<T> verificationNextNode = verificationNode.NextNode;
                     if (comparer.Compare(verificationNode.Value, verificationNextNode.Value) > 0)
                     {
@@ -232,6 +216,8 @@ namespace AlexCollections
                         verificationNextNode.Value = interimValue;
                         arrayIsNotSorted = true;
                     }
+
+                    verificationNode = verificationNode.NextNode;
                 }
             }
             while (arrayIsNotSorted == true);
@@ -239,12 +225,12 @@ namespace AlexCollections
 
         private LinkedNode<T> EnsureNodeIsInList(LinkedNode<T> node)
         {
-            if (node.ListContainingNode == this)
+            if (node.ListContainingNode != this)
             {
-                return node;
+                throw new ArgumentException("This node is not in the list", nameof(node));
             }
 
-            throw new ArgumentException("This node is not in the list", nameof(node));
+            return node;
         }
 
         private LinkedNode<T> CreateNodeBetweenLastAndFirst(T value)
@@ -259,13 +245,31 @@ namespace AlexCollections
 
         private void SetBelongingToThisList(AlexLinkedList<T> values)
         {
-            LinkedNode<T> interimNode = values.Head.PreviousNode;
+            LinkedNode<T> interimNode = values.Head;
 
             for (int counter = 0; counter < values.Count; counter++)
             {
-                interimNode = interimNode.NextNode;
                 interimNode.ListContainingNode = this;
+                interimNode = interimNode.NextNode;
             }
+        }
+
+        private (LinkedNode<T> node, int index) GetNodeWithIndex(T value, IAlexComparer<T> comparer = null)
+        {
+            LinkedNode<T> verificationNode = Head;
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
+
+            for (int counter = 0; counter < _count; counter++)
+            {
+                if (comparer.Compare(verificationNode.Value, value) == 0)
+                {
+                    return (verificationNode, Count);
+                }
+
+                verificationNode = verificationNode.NextNode;
+            }
+
+            return (null, -1);
         }
 
         private void RemoveNodeInList(LinkedNode<T> node)
@@ -275,15 +279,15 @@ namespace AlexCollections
             nextNode.PreviousNode = previousNode;
             previousNode.NextNode = nextNode;
 
-            CheckCurrentReferenceToFirst(node, nextNode);
+            ShiftHeadIfNeeded(node, nextNode);
             _count--;
         }
 
-        private void CheckCurrentReferenceToFirst(LinkedNode<T> currentNode, LinkedNode<T> newNode)
+        private void ShiftHeadIfNeeded(LinkedNode<T> shiftableNode, LinkedNode<T> replacingNode)
         {
-            if (currentNode == Head)
+            if (shiftableNode == Head)
             {
-                _head = newNode;
+                _head = replacingNode;
             }
         }
     }

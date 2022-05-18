@@ -17,8 +17,6 @@
             NextNode = nextNode;
         }
 
-
-
         internal AlexLinkedList<T> ListContainingNode { get; set; }
 
         public LinkedNode<T> PreviousNode { get; internal set; }
