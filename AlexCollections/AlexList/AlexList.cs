@@ -1,6 +1,8 @@
-﻿namespace AlexCollections
+﻿using System.Collections;
+
+namespace AlexCollections
 {
-    public class AlexList<T>
+    public class AlexList<T> : IEnumerable<T>
     {
         private const string WrongIndexExceptionMessage = "The collection does not contain the entered index or value.";
 
@@ -12,10 +14,19 @@
             Clear();
         }
 
-        public AlexEnumerator<T> GetEnumerator()
+        #region Enumerable
+
+        public IEnumerator<T> GetEnumerator()
         {
             return new AlexEnumerator<T>(_elementsArray, _listSise);
         }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        #endregion
 
         public void Add(T value)
         {
@@ -51,14 +62,7 @@
         public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
-            if (IndexOf(value, comparer) == -1)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return IndexOf(value, comparer) != -1;           
         }
 
         public int FindIndex(Predicate<T> predicate)
@@ -221,7 +225,7 @@
 
         private static AlexList<T> EnsureAlexListNotNull(AlexList<T> alexList)
         {
-            return alexList ?? throw new ArgumentNullException(nameof(alexList), "A null is passed as an argument.");
+            return alexList ?? throw new ArgumentNullException(nameof(alexList));
         }
 
         private int RecursivelyBinarySearch(T searchValue, (int Index, int Count) searchRange, IAlexComparer<T> comparer)

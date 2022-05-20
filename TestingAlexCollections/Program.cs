@@ -13,7 +13,7 @@ foreach (int i in linkedList)
 
 Console.WriteLine();
 
-AlexLinkedList<int> newLinkedList = new();  
+AlexLinkedList<int> newLinkedList = new();
 newLinkedList.Add(3);
 newLinkedList.Add(3);
 newLinkedList.Add(3);
@@ -23,7 +23,6 @@ linkedList.InsertRangeAfter(linkedList.Head, newLinkedList);
 
 linkedList.InsertBefore(linkedList.Head, 4);
 
-LinkedNode<int> node = new(5, newLinkedList.Head, newLinkedList.Head.NextNode);
 
 foreach (int i in linkedList)
     Console.Write(i);

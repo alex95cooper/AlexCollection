@@ -40,8 +40,7 @@ namespace AlexCollections
         }
 
         void IDisposable.Dispose()
-        {
-            
+        {            
         }
     }
 }

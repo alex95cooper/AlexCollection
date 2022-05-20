@@ -1,9 +1,11 @@
-﻿namespace AlexCollections
+﻿using System.Collections;
+
+namespace AlexCollections
 {
-    public class AlexEnumerator<T>
+    public class AlexEnumerator<T> : IEnumerator<T>
     {       
-        readonly int _listSize;
-        readonly T[] _elementsArray;
+        private readonly int _listSize;
+        private readonly T[] _elementsArray;
 
         private int _indexOfElement = -1;
 
@@ -12,6 +14,10 @@
             _elementsArray = elementsArray;
             _listSize = listSize;
         }
+
+        public T Current => _elementsArray[_indexOfElement];
+
+        object IEnumerator.Current => Current;
 
         public bool MoveNext()
         {
@@ -32,12 +38,8 @@
             _indexOfElement = -1;
         }
 
-        public object Current
+        void IDisposable.Dispose()
         {
-            get
-            {
-                return _elementsArray[_indexOfElement];
-            }
         }
     }
 }
