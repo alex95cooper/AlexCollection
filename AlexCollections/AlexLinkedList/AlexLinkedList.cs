@@ -4,6 +4,8 @@ namespace AlexCollections
 {
     public class AlexLinkedList<T> : IEnumerable<T>
     {
+        private const string ListIsNullExceptionMessage = "AlexLinkedList is passed as null";
+
         private int _count;
         private LinkedNode<T> _head;
 
@@ -48,7 +50,10 @@ namespace AlexCollections
         {
             if (Count == 0)
             {
-                EnsureNotNull(values);
+                if (values == null)
+                {
+                    throw new ArgumentNullException(nameof(values), ListIsNullExceptionMessage);
+                }
                 SetBelongingToThisList(values);
                 _head = values.Head;
             }
@@ -180,16 +185,12 @@ namespace AlexCollections
 
         private void EnsureNodeValid(LinkedNode<T> node)
         {
-            EnsureNotNull(node);
-            EnsureNodeIsInList(node);
-        }
-
-        private static void EnsureNotNull(object argument)
-        {
-            if (argument == null)
+            if (node == null)
             {
-                throw new ArgumentNullException(nameof(argument));
+                throw new ArgumentNullException(nameof(node), "Node is passed as null");
             }
+
+            EnsureNodeIsInList(node);
         }
 
         private void EnsureNodeIsInList(LinkedNode<T> node)
@@ -223,7 +224,11 @@ namespace AlexCollections
 
         private void InsertRange(LinkedNode<T> previousNode, LinkedNode<T> nextNode, AlexLinkedList<T> values)
         {
-            EnsureNotNull(values);
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values), ListIsNullExceptionMessage);
+            } 
+
             SetBelongingToThisList(values);
 
             LinkedNode<T> lastNodeOfValues = values.Head.PreviousNode;

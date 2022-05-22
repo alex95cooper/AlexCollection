@@ -19,7 +19,7 @@ newLinkedList.Add(3);
 newLinkedList.Add(3);
 newLinkedList.Add(3);
 
-linkedList.InsertRangeAfter(linkedList.Head, newLinkedList);
+linkedList.InsertRangeAfter(linkedList.Head, null);
 
 linkedList.InsertBefore(linkedList.Head, 4);
 

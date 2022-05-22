@@ -38,7 +38,7 @@ namespace AlexCollections
             _indexOfElement = -1;
         }
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
         }
     }
