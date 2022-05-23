@@ -1,6 +1,8 @@
-﻿namespace AlexList
+﻿using System.Collections;
+
+namespace AlexCollections
 {
-    public class AlexList<T>
+    public class AlexList<T> : IEnumerable<T>
     {
         private const string WrongIndexExceptionMessage = "The collection does not contain the entered index or value.";
 
@@ -12,10 +14,19 @@
             Clear();
         }
 
-        public AlexEnumerator<T> GetEnumerator()
+        #region Enumerable
+
+        public IEnumerator<T> GetEnumerator()
         {
             return new AlexEnumerator<T>(_elementsArray, _listSise);
         }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        #endregion
 
         public void Add(T value)
         {
@@ -38,7 +49,7 @@
 
         public int BinarySearch(T value, IAlexComparer<T> comparer = null)
         {
-            comparer = GetComparerOrDefault(comparer);
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
             return RecursivelyBinarySearch(value, (0, _listSise), comparer);
         }
 
@@ -50,15 +61,8 @@
 
         public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
-            comparer = GetComparerOrDefault(comparer);
-            if (IndexOf(value, comparer) == -1)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
+            return IndexOf(value, comparer) != -1;           
         }
 
         public int FindIndex(Predicate<T> predicate)
@@ -89,7 +93,7 @@
 
         public int IndexOf(T value, IAlexComparer<T> comparer = null)
         {
-            comparer = GetComparerOrDefault(comparer);
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
             for (int counter = 0; counter < _listSise; counter++)
             {
@@ -176,7 +180,7 @@
 
         public void Sort(IAlexComparer<T> comparer = null)
         {
-            comparer = GetComparerOrDefault(comparer);
+            comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
             bool arrayIsNotSorted;
             do
@@ -221,12 +225,7 @@
 
         private static AlexList<T> EnsureAlexListNotNull(AlexList<T> alexList)
         {
-            return alexList ?? throw new ArgumentNullException(nameof(alexList), "A null is passed as an argument.");
-        }
-
-        private static IAlexComparer<T> GetComparerOrDefault(IAlexComparer<T> comparer)
-        {
-            return comparer ?? new DefaultAlexComparer<T>();
+            return alexList ?? throw new ArgumentNullException(nameof(alexList));
         }
 
         private int RecursivelyBinarySearch(T searchValue, (int Index, int Count) searchRange, IAlexComparer<T> comparer)

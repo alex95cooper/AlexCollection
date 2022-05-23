@@ -1,4 +1,4 @@
-﻿namespace AlexList
+﻿namespace AlexCollections
 {
     internal class DefaultAlexComparer<T> : IAlexComparer<T>
     {
@@ -19,6 +19,11 @@
             {
                 return 0;
             }
+        }
+
+        public static IAlexComparer<T> GetComparerOrDefault(IAlexComparer<T> comparer)
+        {
+            return comparer ?? new DefaultAlexComparer<T>();
         }
 
         private static int CompareNullReference(T x, T y)

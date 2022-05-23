@@ -1,4 +1,4 @@
-﻿namespace AlexList
+﻿namespace AlexCollections
 {
     public interface IAlexComparer<T>
     {
