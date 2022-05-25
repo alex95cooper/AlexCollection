@@ -10,3 +10,12 @@ sl.Push(4);
 sl.Push(5);
 sl.Push(6);
 sl.Push(7);
+
+foreach (int i in sl)
+    Console.Write(i);
+
+Console.WriteLine();
+Console.WriteLine();
+
+Console.WriteLine(sl.Pop());
+Console.WriteLine(sl.Pop());
