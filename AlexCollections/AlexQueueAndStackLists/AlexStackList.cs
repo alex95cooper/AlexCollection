@@ -1,7 +1,6 @@
-﻿
-namespace AlexCollections
+﻿namespace AlexCollections
 {
-    internal class AlexStackList<T>
+    public class AlexStackList<T>
     {
         private int _count;
         private T[] _elementsArray;
@@ -17,22 +16,11 @@ namespace AlexCollections
         {
             if (_count == _elementsArray.Length)
             {
-                ResizeArray(_elementsArray.Length);
+                ElementsArray<T>.ResizeArray(_elementsArray.Length + 100, Count, ref _elementsArray);
             }
 
             _elementsArray[_count] = value;
             _count++;
-        }
-
-        private void ResizeArray(int newArrayLenght)
-        {
-            T[] interimElementsArray = new T[newArrayLenght];
-            for (int counter = 0; counter < _count; counter++)
-            {
-                interimElementsArray[counter] = _elementsArray[counter];
-            }
-
-            _elementsArray = interimElementsArray;
         }
     }
 }

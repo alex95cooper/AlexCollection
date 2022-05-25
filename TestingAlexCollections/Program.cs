@@ -1,35 +1,12 @@
 ﻿using AlexCollections;
 
-AlexLinkedList<int> linkedList = new();
+AlexStackList<int> sl = new();
 
-linkedList.Add(5);
-linkedList.Add(6);
-linkedList.Add(7);
-linkedList.Add(8);
-linkedList.Add(9);
-
-foreach (int i in linkedList)
-    Console.Write(i);
-
-Console.WriteLine();
-
-AlexLinkedList<int> newLinkedList = new();
-newLinkedList.Add(3);
-newLinkedList.Add(3);
-newLinkedList.Add(3);
-newLinkedList.Add(3);
-
-linkedList.InsertRangeAfter(linkedList.Head, null);
-
-linkedList.InsertBefore(linkedList.Head, 4);
-
-
-foreach (int i in linkedList)
-    Console.Write(i);
-
-Console.WriteLine();
-
-Console.WriteLine(linkedList.Contains(9));
-Console.WriteLine(linkedList.IndexOf(9));
-
-
+sl.Push(0);
+sl.Push(1);
+sl.Push(2);
+sl.Push(3); 
+sl.Push(4);
+sl.Push(5);
+sl.Push(6);
+sl.Push(7);

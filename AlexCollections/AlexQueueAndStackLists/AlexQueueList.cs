@@ -1,6 +1,6 @@
 ﻿namespace AlexCollections
 {
-    internal class AlexQueueList<T>
+    public class AlexQueueList<T>
     {
         private int _count;
         private T[] _elementsArray;
