@@ -175,7 +175,7 @@ namespace AlexCollections
                 _elementsArray[counter] = _elementsArray[counter + 1];
             }
 
-            ResizeArray(_listSise - 1);
+            _listSise--;
         }
 
         public void Sort(IAlexComparer<T> comparer = null)
