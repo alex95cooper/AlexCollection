@@ -48,4 +48,11 @@ Console.WriteLine();
 foreach (int i in ql)
     Console.Write(i);
 
-Console.WriteLine(ql.Contains(8));
+Console.WriteLine();
+
+bool Exist = sl.TryPeek(out int last);
+if (Exist)
+{
+    Console.WriteLine(last);
+}
+

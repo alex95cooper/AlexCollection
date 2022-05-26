@@ -8,7 +8,7 @@ namespace AlexCollections
         private readonly int _listSize;
         private readonly T[] _elementsArray;
 
-        private int _counter = 0;
+        private int _counter;
 
         public AlexQueueAndStackEnumerator(T[] elementsArray, int leftGap, int listSize)
         {
@@ -17,7 +17,7 @@ namespace AlexCollections
             _leftGap = leftGap;
         }
 
-        public T Current => _elementsArray[(_leftGap + _listSize) - _counter];
+        public T Current => _elementsArray[_leftGap + _listSize - _counter];
 
         object IEnumerator.Current => Current;
 

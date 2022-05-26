@@ -57,15 +57,36 @@ namespace AlexCollections
 
         public T Peek()
         {
+            EnsureStackNotEmpty();
             return _elementsArray[_count - 1];
+        }
+
+        public bool TryPeek(out T value)
+        {
+            return ElementsArray<T>.TryDoMethodIfCountNotNull(Peek, _count, out value);
         }
 
         public T Pop()
         {
+            EnsureStackNotEmpty();
+
             T lastValue = _elementsArray[_count - 1];
             _elementsArray[_count - 1] = default;
             _count--;
             return lastValue;
+        }
+
+        public bool TryPop(out T value)
+        {
+            return ElementsArray<T>.TryDoMethodIfCountNotNull(Pop, _count, out value);
+        }
+
+        private void EnsureStackNotEmpty()
+        {
+            if (_count == 0)
+            {
+                throw new InvalidOperationException("Stack is empty");
+            }
         }
     }
 }

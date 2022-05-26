@@ -55,7 +55,7 @@ namespace AlexCollections
             }
             else if (_leftGap == 0 && (_rightGap >= _elementsArray.Length / 10))
             {
-                ShiftArrayToRight();
+                ShiftListToRight();
             }
 
             int indexofElement = _elementsArray.Length - (_rightGap + _count + 1);
@@ -66,11 +66,19 @@ namespace AlexCollections
 
         public T Peek()
         {
+            EnsureQueueNotEmpty();
             return _elementsArray[^(_rightGap + 1)];
+        }
+
+        public bool TryPeek(out T value)
+        {
+            return ElementsArray<T>.TryDoMethodIfCountNotNull(Peek, _count, out value);
         }
 
         public T Dequeue()
         {
+            EnsureQueueNotEmpty();
+
             T firstValue = _elementsArray[^(_rightGap + 1)];
             _elementsArray[^(_rightGap + 1)] = default;
             _rightGap++;
@@ -78,7 +86,20 @@ namespace AlexCollections
             return firstValue;
         }
 
-        private void ShiftArrayToRight()
+        public bool TryDequeue(out T value)
+        {
+            return ElementsArray<T>.TryDoMethodIfCountNotNull(Dequeue, _count, out value);
+        }
+
+        private void EnsureQueueNotEmpty()
+        {
+            if (_count == 0)
+            {
+                throw new InvalidOperationException("Queue is empty");
+            }
+        }
+
+        private void ShiftListToRight()
         {
             T[] interimArray = new T[_elementsArray.Length];
             for (int counter = _elementsArray.Length - 1; counter > _rightGap; counter--)
