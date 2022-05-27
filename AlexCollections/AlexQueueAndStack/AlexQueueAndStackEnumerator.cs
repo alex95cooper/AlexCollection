@@ -10,7 +10,7 @@ namespace AlexCollections
 
         private int _counter;
 
-        public AlexQueueAndStackEnumerator(T[] elementsArray, int leftGap, int listSize)
+        public AlexQueueAndStackEnumerator(T[] elementsArray, int listSize, int leftGap = 0)
         {
             _elementsArray = elementsArray;
             _listSize = listSize;

@@ -2,10 +2,10 @@
 {
     internal class ElementsArray<T>
     {
-        public static void ResizeArray(int newArrayLenght, int count, ref T[] elementsArray)
+        public static void ResizeArray(int newArrayLenght, int count, ref T[] elementsArray, int leftGap = 0)
         {
             T[] interimElementsArray = new T[newArrayLenght];
-            for (int counter = 0; counter < count; counter++)
+            for (int counter = leftGap; counter < leftGap + count; counter++)
             {
                 interimElementsArray[counter] = elementsArray[counter];
             }

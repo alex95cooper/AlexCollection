@@ -2,17 +2,17 @@
 
 namespace AlexCollections
 {
-    public class AlexQueueList<T> : IEnumerable<T>
+    public class AlexQueue<T> : IEnumerable<T>
     {
         private int _leftGap;
         private int _count;
         private int _rightGap;
         private T[] _elementsArray;
 
-        public AlexQueueList()
+        public AlexQueue()
         {
             _elementsArray = new T[100];
-            _leftGap = _elementsArray.Length;
+            _rightGap = _elementsArray.Length;
         }
 
         public int Count => _count;
@@ -21,7 +21,7 @@ namespace AlexCollections
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AlexQueueAndStackEnumerator<T>(_elementsArray, _leftGap, _count);
+            return new AlexQueueAndStackEnumerator<T>(_elementsArray, _count, _leftGap);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -34,9 +34,7 @@ namespace AlexCollections
         public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
-
-            int indexOfFirstElement = _elementsArray.Length - (_rightGap + 1);
-            for (int counter = indexOfFirstElement; counter > _leftGap - 1; counter--)
+            for (int counter = _leftGap; counter < _leftGap + _count; counter--)
             {
                 if (comparer.Compare(value, _elementsArray[counter]) == 0)
                 {
@@ -49,25 +47,26 @@ namespace AlexCollections
 
         public void Enqueue(T value)
         {
-            if (_leftGap == 0 && _rightGap < _elementsArray.Length / 10)
+            if (_rightGap == 0 && _leftGap < _elementsArray.Length / 10)
             {
                 ElementsArray<T>.ResizeArray(_elementsArray.Length + 100, Count, ref _elementsArray);
+                _rightGap += 100;
+                ShiftQueueToLeft();
             }
-            else if (_leftGap == 0 && (_rightGap >= _elementsArray.Length / 10))
+            else if (_rightGap == 0 && (_leftGap >= _elementsArray.Length / 10))
             {
-                ShiftListToRight();
+                ShiftQueueToLeft();
             }
 
-            int indexofElement = _elementsArray.Length - (_rightGap + _count + 1);
-            _elementsArray[indexofElement] = value;
+            _elementsArray[_leftGap + _count] = value;
             _count++;
-            _leftGap--;
+            _rightGap--;
         }
 
         public T Peek()
         {
             EnsureQueueNotEmpty();
-            return _elementsArray[^(_rightGap + 1)];
+            return _elementsArray[_leftGap];
         }
 
         public bool TryPeek(out T value)
@@ -79,9 +78,9 @@ namespace AlexCollections
         {
             EnsureQueueNotEmpty();
 
-            T firstValue = _elementsArray[^(_rightGap + 1)];
-            _elementsArray[^(_rightGap + 1)] = default;
-            _rightGap++;
+            T firstValue = _elementsArray[_leftGap];
+            _elementsArray[_leftGap] = default;
+            _leftGap++;
             _count--;
             return firstValue;
         }
@@ -99,17 +98,17 @@ namespace AlexCollections
             }
         }
 
-        private void ShiftListToRight()
+        private void ShiftQueueToLeft()
         {
             T[] interimArray = new T[_elementsArray.Length];
-            for (int counter = _elementsArray.Length - 1; counter > _rightGap; counter--)
+            for (int counter = 0; counter < Count; counter++)
             {
-                interimArray[counter] = _elementsArray[counter - _rightGap];
+                interimArray[counter] = _elementsArray[_leftGap + counter];
             }
 
             _elementsArray = interimArray;
-            _leftGap = _rightGap;
-            _rightGap = 0;
+            _rightGap = _leftGap;
+            _leftGap = 0;
         }
     }
 }

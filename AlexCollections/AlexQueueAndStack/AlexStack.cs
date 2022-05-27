@@ -2,14 +2,12 @@
 
 namespace AlexCollections
 {
-    public class AlexStackList<T> : IEnumerable<T>
+    public class AlexStack<T> : IEnumerable<T>
     {
-        private const int _leftgap = 0;
-
         private int _count;
         private T[] _elementsArray;
 
-        public AlexStackList()
+        public AlexStack()
         {
             _elementsArray = new T[100];
         }
@@ -20,7 +18,7 @@ namespace AlexCollections
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AlexQueueAndStackEnumerator<T>(_elementsArray, _leftgap, _count);
+            return new AlexQueueAndStackEnumerator<T>(_elementsArray, _count);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

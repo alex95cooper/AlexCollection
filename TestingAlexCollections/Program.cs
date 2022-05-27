@@ -1,6 +1,6 @@
 ﻿using AlexCollections;
 
-AlexStackList<int> sl = new();
+AlexStack<int> sl = new();
 
 sl.Push(0);
 sl.Push(1);
@@ -22,7 +22,7 @@ Console.WriteLine(sl.Pop());
 
 Console.WriteLine();
 
-AlexQueueList<int> ql = new();
+AlexQueue<int> ql = new();
 
 ql.Enqueue(0);
 ql.Enqueue(1);
