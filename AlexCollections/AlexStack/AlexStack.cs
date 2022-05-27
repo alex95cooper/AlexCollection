@@ -18,7 +18,7 @@ namespace AlexCollections
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AlexQueueAndStackEnumerator<T>(_elementsArray, _count);
+            return new AlexStackEnumerator<T>(_elementsArray, _count);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -46,7 +46,7 @@ namespace AlexCollections
         {
             if (_count == _elementsArray.Length)
             {
-                ElementsArray<T>.ResizeArray(_elementsArray.Length + 100, Count, ref _elementsArray);
+                ElementsArray<T>.ResizeArray(_elementsArray.Length + 100, ref _elementsArray);
             }
 
             _elementsArray[_count] = value;

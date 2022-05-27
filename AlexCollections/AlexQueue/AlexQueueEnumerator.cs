@@ -2,7 +2,7 @@
 
 namespace AlexCollections
 {
-    internal class AlexQueueAndStackEnumerator<T> : IEnumerator<T>
+    internal class AlexQueueEnumerator<T> : IEnumerator<T>
     {
         private readonly int _leftGap;
         private readonly int _listSize;
@@ -10,14 +10,14 @@ namespace AlexCollections
 
         private int _counter;
 
-        public AlexQueueAndStackEnumerator(T[] elementsArray, int listSize, int leftGap = 0)
+        public AlexQueueEnumerator(T[] elementsArray, int listSize, int leftGap)
         {
             _elementsArray = elementsArray;
             _listSize = listSize;
             _leftGap = leftGap;
         }
 
-        public T Current => _elementsArray[_leftGap + _listSize - _counter];
+        public T Current => _elementsArray[_leftGap + _counter];
 
         object IEnumerator.Current => Current;
 

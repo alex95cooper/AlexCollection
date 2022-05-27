@@ -21,7 +21,7 @@ namespace AlexCollections
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AlexQueueAndStackEnumerator<T>(_elementsArray, _count, _leftGap);
+            return new AlexQueueEnumerator<T>(_elementsArray, _count, _leftGap);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -49,7 +49,7 @@ namespace AlexCollections
         {
             if (_rightGap == 0 && _leftGap < _elementsArray.Length / 10)
             {
-                ElementsArray<T>.ResizeArray(_elementsArray.Length + 100, Count, ref _elementsArray);
+                ResizeArray(_elementsArray.Length + 100);
                 _rightGap += 100;
                 ShiftQueueToLeft();
             }
@@ -96,6 +96,17 @@ namespace AlexCollections
             {
                 throw new InvalidOperationException("Queue is empty");
             }
+        }
+
+        private void ResizeArray(int newLenght)
+        {
+            T[] interimElementsArray = new T[newLenght];
+            for (int counter = _leftGap; counter < _leftGap + _count; counter++)
+            {
+                interimElementsArray[counter] = _elementsArray[counter];
+            }
+
+            _elementsArray = interimElementsArray;
         }
 
         private void ShiftQueueToLeft()

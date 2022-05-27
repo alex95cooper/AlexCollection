@@ -209,7 +209,7 @@ namespace AlexCollections
         {
             if (count >= _elementsArray.Length)
             {
-                ElementsArray<T>.ResizeArray(_elementsArray.Length + 100, _count, ref _elementsArray);
+                ElementsArray<T>.ResizeArray(_elementsArray.Length + 100, ref _elementsArray);
             }
         }
 
