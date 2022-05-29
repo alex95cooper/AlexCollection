@@ -4,6 +4,8 @@ namespace AlexCollections
 {
     public class AlexQueue<T> : IEnumerable<T>
     {
+        private const int _initialSize = 100;
+
         private int _leftGap;
         private int _count;
         private int _rightGap;
@@ -11,7 +13,7 @@ namespace AlexCollections
 
         public AlexQueue()
         {
-            _elementsArray = new T[100];
+            _elementsArray = new T[_initialSize];
             _rightGap = _elementsArray.Length;
         }
 
@@ -49,11 +51,11 @@ namespace AlexCollections
         {
             if (_rightGap == 0 && _leftGap < _elementsArray.Length / 10)
             {
-                ResizeArray(_elementsArray.Length + 100);
-                _rightGap += 100;
+                ResizeArray(_elementsArray.Length + _initialSize);
+                _rightGap += _initialSize;
                 ShiftQueueToLeft();
             }
-            else if (_rightGap == 0 && (_leftGap >= _elementsArray.Length / 10))
+            else if (_rightGap == 0)
             {
                 ShiftQueueToLeft();
             }
@@ -71,7 +73,16 @@ namespace AlexCollections
 
         public bool TryPeek(out T value)
         {
-            return ElementsArray<T>.TryDoMethodIfCountNotNull(Peek, _count, out value);
+            if (_count == 0)
+            {
+                value = default;
+                return false;
+            }
+            else
+            {
+                value = Peek();
+                return true;
+            }
         }
 
         public T Dequeue()
@@ -87,7 +98,16 @@ namespace AlexCollections
 
         public bool TryDequeue(out T value)
         {
-            return ElementsArray<T>.TryDoMethodIfCountNotNull(Dequeue, _count, out value);
+            if (_count == 0)
+            {
+                value = default;
+                return false;
+            }
+            else
+            {
+                value = Dequeue();
+                return true;
+            }
         }
 
         private void EnsureQueueNotEmpty()
