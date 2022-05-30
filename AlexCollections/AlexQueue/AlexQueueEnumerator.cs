@@ -4,34 +4,37 @@ namespace AlexCollections
 {
     internal class AlexQueueEnumerator<T> : IEnumerator<T>
     {
+
         private readonly int _head;
-        private readonly int _tail;
+        private readonly int _count;
         private readonly T[] _elementsArray;
 
-        private int _counter;
+        private int _elementCounter = -1;
+        private int _indexCounter;
 
-        public AlexQueueEnumerator(T[] elementsArray, int head, int tail)
+        public AlexQueueEnumerator(T[] elementsArray, int count, int head)
         {
             _elementsArray = elementsArray;
+            _count = count;
             _head = head;
-            _tail = tail;
-            _counter = _head - 1;
+            _indexCounter = _head - 1;
         }
 
-        public T Current => _elementsArray[_counter];
+        public T Current => _elementsArray[_indexCounter];
 
         object IEnumerator.Current => Current;
 
         public bool MoveNext()
         {
-            if (_counter == _elementsArray.Length - 1)
+            if (_indexCounter == _elementsArray.Length)
             {
-                _counter = -1;
+                _indexCounter = -1;
             }
 
-            if (_counter != _tail)
+            if (_elementCounter < _count - 1)
             {
-                _counter++;
+                _indexCounter++;
+                _elementCounter++;
                 return true;
             }
             else
@@ -43,7 +46,8 @@ namespace AlexCollections
 
         public void Reset()
         {
-            _counter = _head - 1;
+            _elementCounter = -1;
+            _indexCounter = _head - 1;
         }
 
         public void Dispose()

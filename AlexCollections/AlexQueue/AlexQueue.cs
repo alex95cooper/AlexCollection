@@ -14,6 +14,7 @@ namespace AlexCollections
         public AlexQueue()
         {
             _elementsArray = new T[InitialSize];
+            _tail = -1;
         }
 
         public int Count => _count;
@@ -22,7 +23,7 @@ namespace AlexCollections
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AlexQueueEnumerator<T>(_elementsArray, _head, _tail);
+            return new AlexQueueEnumerator<T>(_elementsArray, _count, _head);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -36,20 +37,20 @@ namespace AlexCollections
         {
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
-            int counter = _head;
-            while (counter != _tail + 1)
+            int indexCounter = _head;
+            for (int elementCounter = 0; elementCounter < _count; elementCounter++)
             {
-                if (counter == _elementsArray.Length)
+                if (indexCounter == _elementsArray.Length)
                 {
-                    counter = 0;
+                    indexCounter = 0;
                 }
 
-                if (comparer.Compare(value, _elementsArray[counter]) == 0)
+                if (comparer.Compare(value, _elementsArray[indexCounter]) == 0)
                 {
                     return true;
                 }
 
-                counter++;
+                indexCounter++;
             }
 
             return false;
@@ -57,22 +58,11 @@ namespace AlexCollections
 
         public void Enqueue(T value)
         {
-            if (_count == 0)
+            if (_count < _elementsArray.Length)
             {
-                _tail = _head = 0;
+                _tail = (_tail == _elementsArray.Length) ? 0 : _tail + 1;
             }
-            else if (_count < _elementsArray.Length - 1)
-            {
-                if (_tail == _elementsArray.Length)
-                {
-                    _tail = 0;
-                }
-                else
-                {
-                    _tail++;
-                }
-            }
-            else if (_count == _elementsArray.Length - 1)
+            else if (_count == _elementsArray.Length)
             {
                 ResizeArray(_elementsArray.Length + InitialSize);
                 Enqueue(value);
@@ -106,15 +96,7 @@ namespace AlexCollections
 
             T firstValue = _elementsArray[_head];
             _elementsArray[_head] = default;
-            if (_head == _elementsArray.Length - 1)
-            {
-                _head = 0;
-            }
-            else
-            {
-                _head++;
-            }
-           
+            _head = (_head == _elementsArray.Length - 1) ? 0 : _head + 1;
             _count--;
             return firstValue;
         }
@@ -143,18 +125,16 @@ namespace AlexCollections
         {
             T[] interimElementsArray = new T[newLength];
 
-            int interimCounter = 0;
-            int counter = _head;
-            while (counter != _tail + 1)
+            int indexCounter = _head;
+            for (int elementCounter = 0; elementCounter < _count; elementCounter++)
             {
-                if (counter == _elementsArray.Length)
+                if (indexCounter == _elementsArray.Length)
                 {
-                    counter = 0;
+                    indexCounter = 0;
                 }
 
-                interimElementsArray[interimCounter] = _elementsArray[counter];
-                interimCounter++;
-                counter++;
+                interimElementsArray[elementCounter] = _elementsArray[indexCounter];
+                indexCounter++;
             }
 
             _elementsArray = interimElementsArray;
