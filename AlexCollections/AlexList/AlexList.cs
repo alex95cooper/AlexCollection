@@ -5,7 +5,7 @@ namespace AlexCollections
     public class AlexList<T> : IEnumerable<T>
     {
         private const string WrongIndexExceptionMessage = "The collection does not contain the entered index or value.";
-        private const int _initialSize = 100;
+        private const int InitialSize = 100;
 
         private int _count;
         private T[] _elementsArray;
@@ -19,7 +19,7 @@ namespace AlexCollections
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AlexEnumerator<T>(_elementsArray, _count);
+            return new AlexListEnumerator<T>(_elementsArray, _count);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -58,7 +58,7 @@ namespace AlexCollections
 
         public void Clear()
         {
-            _elementsArray = new T[_initialSize];
+            _elementsArray = new T[InitialSize];
             _count = 0;
         }
 
@@ -210,7 +210,7 @@ namespace AlexCollections
         {
             if (count >= _elementsArray.Length)
             {
-                _elementsArray = ArrayResizer<T>.Resize(_elementsArray.Length + _initialSize, _elementsArray);
+                _elementsArray = ArrayResizer<T>.Resize(_elementsArray.Length + InitialSize, _elementsArray);
             }
         }
 

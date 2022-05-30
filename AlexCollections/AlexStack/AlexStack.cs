@@ -4,14 +4,14 @@ namespace AlexCollections
 {
     public class AlexStack<T> : IEnumerable<T>
     {
-        private const int _initialSize = 100;
+        private const int InitialSize = 100;
 
         private int _count;
         private T[] _elementsArray;
 
         public AlexStack()
         {
-            _elementsArray = new T[_initialSize];
+            _elementsArray = new T[InitialSize];
         }
 
         public int Count => _count;
@@ -48,7 +48,7 @@ namespace AlexCollections
         {
             if (_count == _elementsArray.Length)
             {
-                _elementsArray = ArrayResizer<T>.Resize(_elementsArray.Length + _initialSize, _elementsArray);
+                _elementsArray = ArrayResizer<T>.Resize(_elementsArray.Length + InitialSize, _elementsArray);
             }
 
             _elementsArray[_count] = value;
@@ -68,11 +68,9 @@ namespace AlexCollections
                 value = default;
                 return false;
             }
-            else
-            {
-                value = Peek();
-                return true;
-            }
+
+            value = Peek();
+            return true;
         }
 
         public T Pop()
@@ -92,11 +90,9 @@ namespace AlexCollections
                 value = default;
                 return false;
             }
-            else
-            {
-                value = Pop();
-                return true;
-            }
+
+            value = Pop();
+            return true;
         }
 
         private void EnsureStackNotEmpty()

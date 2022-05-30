@@ -4,17 +4,16 @@ namespace AlexCollections
 {
     public class AlexQueue<T> : IEnumerable<T>
     {
-        private const int _initialSize = 100;
+        private const int InitialSize = 100;
 
-        private int _leftGap;
+        private int _head;
         private int _count;
-        private int _rightGap;
+        private int _tail;
         private T[] _elementsArray;
 
         public AlexQueue()
         {
-            _elementsArray = new T[_initialSize];
-            _rightGap = _elementsArray.Length;
+            _elementsArray = new T[InitialSize];
         }
 
         public int Count => _count;
@@ -23,7 +22,7 @@ namespace AlexCollections
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AlexQueueEnumerator<T>(_elementsArray, _count, _leftGap);
+            return new AlexQueueEnumerator<T>(_elementsArray, _head, _tail);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -36,12 +35,21 @@ namespace AlexCollections
         public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
-            for (int counter = _leftGap; counter < _leftGap + _count; counter--)
+
+            int counter = _head;
+            while (counter != _tail + 1)
             {
+                if (counter == _elementsArray.Length)
+                {
+                    counter = 0;
+                }
+
                 if (comparer.Compare(value, _elementsArray[counter]) == 0)
                 {
                     return true;
                 }
+
+                counter++;
             }
 
             return false;
@@ -49,26 +57,35 @@ namespace AlexCollections
 
         public void Enqueue(T value)
         {
-            if (_rightGap == 0 && _leftGap < _elementsArray.Length / 10)
+            if (_count == 0)
             {
-                ResizeArray(_elementsArray.Length + _initialSize);
-                _rightGap += _initialSize;
-                ShiftQueueToLeft();
+                _tail = _head = 0;
             }
-            else if (_rightGap == 0)
+            else if (_count < _elementsArray.Length - 1)
             {
-                ShiftQueueToLeft();
+                if (_tail == _elementsArray.Length)
+                {
+                    _tail = 0;
+                }
+                else
+                {
+                    _tail++;
+                }
+            }
+            else if (_count == _elementsArray.Length - 1)
+            {
+                ResizeArray(_elementsArray.Length + InitialSize);
+                Enqueue(value);
             }
 
-            _elementsArray[_leftGap + _count] = value;
+            _elementsArray[_tail] = value;
             _count++;
-            _rightGap--;
         }
 
         public T Peek()
         {
             EnsureQueueNotEmpty();
-            return _elementsArray[_leftGap];
+            return _elementsArray[_head];
         }
 
         public bool TryPeek(out T value)
@@ -78,20 +95,26 @@ namespace AlexCollections
                 value = default;
                 return false;
             }
-            else
-            {
-                value = Peek();
-                return true;
-            }
+
+            value = Peek();
+            return true;
         }
 
         public T Dequeue()
         {
             EnsureQueueNotEmpty();
 
-            T firstValue = _elementsArray[_leftGap];
-            _elementsArray[_leftGap] = default;
-            _leftGap++;
+            T firstValue = _elementsArray[_head];
+            _elementsArray[_head] = default;
+            if (_head == _elementsArray.Length - 1)
+            {
+                _head = 0;
+            }
+            else
+            {
+                _head++;
+            }
+           
             _count--;
             return firstValue;
         }
@@ -103,11 +126,9 @@ namespace AlexCollections
                 value = default;
                 return false;
             }
-            else
-            {
-                value = Dequeue();
-                return true;
-            }
+
+            value = Dequeue();
+            return true;
         }
 
         private void EnsureQueueNotEmpty()
@@ -118,28 +139,27 @@ namespace AlexCollections
             }
         }
 
-        private void ResizeArray(int newLenght)
+        private void ResizeArray(int newLength)
         {
-            T[] interimElementsArray = new T[newLenght];
-            for (int counter = _leftGap; counter < _leftGap + _count; counter++)
+            T[] interimElementsArray = new T[newLength];
+
+            int interimCounter = 0;
+            int counter = _head;
+            while (counter != _tail + 1)
             {
-                interimElementsArray[counter] = _elementsArray[counter];
+                if (counter == _elementsArray.Length)
+                {
+                    counter = 0;
+                }
+
+                interimElementsArray[interimCounter] = _elementsArray[counter];
+                interimCounter++;
+                counter++;
             }
 
             _elementsArray = interimElementsArray;
-        }
-
-        private void ShiftQueueToLeft()
-        {
-            T[] interimArray = new T[_elementsArray.Length];
-            for (int counter = 0; counter < Count; counter++)
-            {
-                interimArray[counter] = _elementsArray[_leftGap + counter];
-            }
-
-            _elementsArray = interimArray;
-            _rightGap = _leftGap;
-            _leftGap = 0;
+            _head = 0;
+            _tail = _count - 1;
         }
     }
 }
