@@ -40,8 +40,24 @@ Console.WriteLine();
 
 Console.WriteLine(ql.Dequeue());
 Console.WriteLine(ql.Dequeue());
+Console.WriteLine(ql.Dequeue());
+Console.WriteLine(ql.Dequeue());
+Console.WriteLine(ql.Dequeue());
+Console.WriteLine(ql.Dequeue());
 
 ql.Enqueue(8);
+ql.Enqueue(9);
+ql.Enqueue(10);
+ql.Enqueue(11);
+ql.Enqueue(12);
+ql.Enqueue(13);
+ql.Enqueue(14);
+ql.Enqueue(15);
+ql.Enqueue(16);
+ql.Enqueue(17);
+ql.Enqueue(18);
+ql.Enqueue(19);
+ql.Enqueue(20);
 
 Console.WriteLine();
 
@@ -50,9 +66,4 @@ foreach (int i in ql)
 
 Console.WriteLine();
 
-bool Exist = sl.TryPeek(out int last);
-if (Exist)
-{
-    Console.WriteLine(last);
-}
 

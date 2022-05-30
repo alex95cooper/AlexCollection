@@ -26,22 +26,20 @@ namespace AlexCollections
 
         public bool MoveNext()
         {
-            if (_indexCounter == _elementsArray.Length)
-            {
-                _indexCounter = -1;
-            }
-
-            if (_elementCounter < _count - 1)
-            {
-                _indexCounter++;
-                _elementCounter++;
-                return true;
-            }
-            else
+            if (_elementCounter == _count - 1)
             {
                 Reset();
                 return false;
             }
+
+            if (_indexCounter == _elementsArray.Length - 1)
+            {
+                _indexCounter = -1;
+            }
+
+            _indexCounter++;
+            _elementCounter++;
+            return true;
         }
 
         public void Reset()

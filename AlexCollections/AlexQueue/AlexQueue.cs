@@ -4,7 +4,7 @@ namespace AlexCollections
 {
     public class AlexQueue<T> : IEnumerable<T>
     {
-        private const int InitialSize = 100;
+        private const int InitialSize = 5;
 
         private int _head;
         private int _count;
@@ -14,7 +14,6 @@ namespace AlexCollections
         public AlexQueue()
         {
             _elementsArray = new T[InitialSize];
-            _tail = -1;
         }
 
         public int Count => _count;
@@ -37,20 +36,12 @@ namespace AlexCollections
         {
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
-            int indexCounter = _head;
-            for (int elementCounter = 0; elementCounter < _count; elementCounter++)
+            foreach (var item in this)
             {
-                if (indexCounter == _elementsArray.Length)
-                {
-                    indexCounter = 0;
-                }
-
-                if (comparer.Compare(value, _elementsArray[indexCounter]) == 0)
+                if (comparer.Compare(item, value) == 0)
                 {
                     return true;
                 }
-
-                indexCounter++;
             }
 
             return false;
@@ -58,18 +49,19 @@ namespace AlexCollections
 
         public void Enqueue(T value)
         {
-            if (_count < _elementsArray.Length)
-            {
-                _tail = (_tail == _elementsArray.Length) ? 0 : _tail + 1;
-            }
-            else if (_count == _elementsArray.Length)
+            if (_count == _elementsArray.Length)
             {
                 ResizeArray(_elementsArray.Length + InitialSize);
-                Enqueue(value);
             }
 
             _elementsArray[_tail] = value;
+            _tail++;
             _count++;
+
+            if (_tail == _elementsArray.Length)
+            {
+                _tail = 0;
+            }
         }
 
         public T Peek()
@@ -125,21 +117,15 @@ namespace AlexCollections
         {
             T[] interimElementsArray = new T[newLength];
 
-            int indexCounter = _head;
-            for (int elementCounter = 0; elementCounter < _count; elementCounter++)
+            int counter = 0;
+            foreach (var item in this)
             {
-                if (indexCounter == _elementsArray.Length)
-                {
-                    indexCounter = 0;
-                }
-
-                interimElementsArray[elementCounter] = _elementsArray[indexCounter];
-                indexCounter++;
+                interimElementsArray[counter++] = item;
             }
 
             _elementsArray = interimElementsArray;
             _head = 0;
-            _tail = _count - 1;
+            _tail = _count;
         }
     }
 }
