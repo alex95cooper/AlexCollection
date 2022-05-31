@@ -4,7 +4,7 @@ namespace AlexCollections
 {
     public class AlexQueue<T> : IEnumerable<T>
     {
-        private const int InitialSize = 5;
+        private const int InitialSize = 100;
 
         private int _head;
         private int _count;
@@ -35,7 +35,6 @@ namespace AlexCollections
         public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
-
             foreach (var item in this)
             {
                 if (comparer.Compare(item, value) == 0)
@@ -116,7 +115,6 @@ namespace AlexCollections
         private void ResizeArray(int newLength)
         {
             T[] interimElementsArray = new T[newLength];
-
             int counter = 0;
             foreach (var item in this)
             {

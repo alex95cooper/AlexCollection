@@ -4,7 +4,6 @@ namespace AlexCollections
 {
     internal class AlexQueueEnumerator<T> : IEnumerator<T>
     {
-
         private readonly int _head;
         private readonly int _count;
         private readonly T[] _elementsArray;
