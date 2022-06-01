@@ -2,17 +2,17 @@
 
 namespace AlexCollections
 {
-    public class AlexEnumerator<T> : IEnumerator<T>
-    {       
-        private readonly int _listSize;
+    public class AlexListEnumerator<T> : IEnumerator<T>
+    {
+        private readonly int _count;
         private readonly T[] _elementsArray;
 
         private int _indexOfElement = -1;
 
-        public AlexEnumerator(T[] elementsArray, int listSize)
+        public AlexListEnumerator(T[] elementsArray, int count)
         {
             _elementsArray = elementsArray;
-            _listSize = listSize;
+            _count = count;
         }
 
         public T Current => _elementsArray[_indexOfElement];
@@ -21,7 +21,7 @@ namespace AlexCollections
 
         public bool MoveNext()
         {
-            if (_indexOfElement < _listSize - 1)
+            if (_indexOfElement < _count - 1)
             {
                 _indexOfElement++;
                 return true;

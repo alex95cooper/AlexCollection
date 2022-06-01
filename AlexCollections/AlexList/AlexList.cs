@@ -5,8 +5,9 @@ namespace AlexCollections
     public class AlexList<T> : IEnumerable<T>
     {
         private const string WrongIndexExceptionMessage = "The collection does not contain the entered index or value.";
+        private const int InitialSize = 100;
 
-        private int _listSise;
+        private int _count;
         private T[] _elementsArray;
 
         public AlexList()
@@ -18,7 +19,7 @@ namespace AlexCollections
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AlexEnumerator<T>(_elementsArray, _listSise);
+            return new AlexListEnumerator<T>(_elementsArray, _count);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -30,44 +31,46 @@ namespace AlexCollections
 
         public void Add(T value)
         {
-            ResizeArray(_listSise + 1);
-            _elementsArray[_listSise - 1] = value;
+            ResizeIfNeeded(_count + 1);
+            _elementsArray[_count] = value;
+            _count++;
         }
 
         public void AddRange(AlexList<T> alexList)
         {
             alexList = EnsureAlexListNotNull(alexList);
 
-            ResizeArray(_listSise + alexList._listSise);
-
-            int lastListSize = _listSise - alexList._listSise;
-            for (int counter = lastListSize; counter < _listSise; counter++)
+            int newCount = _count + alexList._count;
+            ResizeIfNeeded(_count);
+            for (int counter = _count; counter < newCount; counter++)
             {
-                _elementsArray[counter] = alexList._elementsArray[counter - lastListSize];
+                _elementsArray[counter] = alexList._elementsArray[counter - _count];
             }
+
+            _count += alexList._count;
         }
 
         public int BinarySearch(T value, IAlexComparer<T> comparer = null)
         {
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
-            return RecursivelyBinarySearch(value, (0, _listSise), comparer);
+            return RecursivelyBinarySearch(value, (0, _count), comparer);
         }
 
         public void Clear()
         {
-            _elementsArray = new T[100];
-            _listSise = 0;
+            _elementsArray = new T[InitialSize];
+            _count = 0;
         }
 
         public bool Contains(T value, IAlexComparer<T> comparer = null)
         {
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
-            return IndexOf(value, comparer) != -1;           
+            return IndexOf(value, comparer) != -1;
         }
 
         public int FindIndex(Predicate<T> predicate)
         {
-            for (int counter = 0; counter < _listSise; counter++)
+            for (int counter = 0; counter < _count; counter++)
             {
                 if (predicate.Invoke(_elementsArray[counter]))
                 {
@@ -80,7 +83,7 @@ namespace AlexCollections
 
         public int FindLastIndex(Predicate<T> predicate)
         {
-            for (int counter = _listSise - 1; counter > -1; counter--)
+            for (int counter = _count - 1; counter > -1; counter--)
             {
                 if (predicate.Invoke(_elementsArray[counter]))
                 {
@@ -95,7 +98,7 @@ namespace AlexCollections
         {
             comparer = DefaultAlexComparer<T>.GetComparerOrDefault(comparer);
 
-            for (int counter = 0; counter < _listSise; counter++)
+            for (int counter = 0; counter < _count; counter++)
             {
                 if (comparer.Compare(value, _elementsArray[counter]) == 0)
                 {
@@ -108,24 +111,24 @@ namespace AlexCollections
 
         public void Insert(T value, int index)
         {
-            if (index < 0 || index > _listSise)
+            if (index < 0 || index > _count)
             {
                 throw new ArgumentException(WrongIndexExceptionMessage);
             }
-            else if (index == _listSise)
+            else if (index == _count)
             {
                 Add(value);
             }
             else
             {
-                ResizeArray(_listSise + 1);
-
-                for (int counter = _listSise - 2; counter >= index; counter--)
+                ResizeIfNeeded(_count + 1);
+                for (int counter = _count - 1; counter >= index; counter--)
                 {
                     _elementsArray[counter + 1] = _elementsArray[counter];
                 }
 
                 _elementsArray[index] = value;
+                _count++;
             }
         }
 
@@ -133,27 +136,29 @@ namespace AlexCollections
         {
             alexList = EnsureAlexListNotNull(alexList);
 
-            if (index < 0 || index > _listSise)
+            if (index < 0 || index > _count)
             {
                 throw new ArgumentException(WrongIndexExceptionMessage);
             }
-            else if (index == _listSise)
+            else if (index == _count)
             {
                 AddRange(alexList);
             }
             else
             {
-                ResizeArray(_listSise + alexList._listSise);
-
-                for (int counter = _listSise - 1; counter >= index + alexList._listSise; counter--)
+                int newCount = _count + alexList._count;
+                ResizeIfNeeded(newCount);
+                for (int counter = newCount - 1; counter >= index + alexList._count; counter--)
                 {
-                    _elementsArray[counter] = _elementsArray[counter - alexList._listSise];
+                    _elementsArray[counter] = _elementsArray[counter - alexList._count];
                 }
 
-                for (int counter = index; counter < index + alexList._listSise; counter++)
+                for (int counter = index; counter < index + alexList._count; counter++)
                 {
                     _elementsArray[counter] = alexList._elementsArray[counter - index];
                 }
+
+                _count += alexList._count;
             }
         }
 
@@ -165,17 +170,17 @@ namespace AlexCollections
 
         public void RemoveAt(int index)
         {
-            if (index < 0 || index >= _listSise)
+            if (index < 0 || index >= _count)
             {
                 throw new ArgumentException(WrongIndexExceptionMessage);
             }
 
-            for (int counter = index; counter < _listSise; counter++)
+            for (int counter = index; counter < _count; counter++)
             {
                 _elementsArray[counter] = _elementsArray[counter + 1];
             }
 
-            ResizeArray(_listSise - 1);
+            _count--;
         }
 
         public void Sort(IAlexComparer<T> comparer = null)
@@ -187,7 +192,7 @@ namespace AlexCollections
             {
                 arrayIsNotSorted = false;
 
-                for (int counter = 0; counter < _listSise - 1; counter++)
+                for (int counter = 0; counter < _count - 1; counter++)
                 {
                     if (comparer.Compare(_elementsArray[counter], _elementsArray[counter + 1]) > 0)
                     {
@@ -201,26 +206,12 @@ namespace AlexCollections
             while (arrayIsNotSorted == true);
         }
 
-        private void ResizeArray(int newSize)
+        private void ResizeIfNeeded(int count)
         {
-            int excessOfNewSize = newSize - _elementsArray.Length;
-            if (excessOfNewSize > 0)
+            if (count >= _elementsArray.Length)
             {
-                AssignValuesToNewArray(newSize + 100, newSize);
+                _elementsArray = ArrayResizer<T>.Resize(_elementsArray.Length + InitialSize, _elementsArray);
             }
-
-            _listSise = newSize;
-        }
-
-        private void AssignValuesToNewArray(int newArrayLenght, int size)
-        {
-            T[] interimElementsArray = new T[newArrayLenght];
-            for (int counter = 0; counter < size; counter++)
-            {
-                interimElementsArray[counter] = _elementsArray[counter];
-            }
-
-            _elementsArray = interimElementsArray;
         }
 
         private static AlexList<T> EnsureAlexListNotNull(AlexList<T> alexList)

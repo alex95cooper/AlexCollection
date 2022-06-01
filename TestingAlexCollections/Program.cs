@@ -1,35 +1,62 @@
 ﻿using AlexCollections;
 
-AlexLinkedList<int> linkedList = new();
+AlexStack<int> sl = new();
 
-linkedList.Add(5);
-linkedList.Add(6);
-linkedList.Add(7);
-linkedList.Add(8);
-linkedList.Add(9);
+sl.Push(0);
+sl.Push(1);
+sl.Push(2);
+sl.Push(3); 
+sl.Push(4);
+sl.Push(5);
+sl.Push(6);
+sl.Push(7);
 
-foreach (int i in linkedList)
+foreach (int i in sl)
+    Console.Write(i);
+
+Console.WriteLine();
+Console.WriteLine();
+
+Console.WriteLine(sl.Pop());
+Console.WriteLine(sl.Pop());
+
+Console.WriteLine();
+
+AlexQueue<int> ql = new();
+
+ql.Enqueue(0);
+ql.Enqueue(1);
+ql.Enqueue(2);
+ql.Enqueue(3);
+ql.Enqueue(4);
+ql.Enqueue(5);
+ql.Enqueue(6);
+ql.Enqueue(7);
+
+foreach (int i in ql)
     Console.Write(i);
 
 Console.WriteLine();
 
-AlexLinkedList<int> newLinkedList = new();
-newLinkedList.Add(3);
-newLinkedList.Add(3);
-newLinkedList.Add(3);
-newLinkedList.Add(3);
+Console.WriteLine(ql.Dequeue());
+Console.WriteLine(ql.Dequeue());
+Console.WriteLine(ql.Dequeue());
+Console.WriteLine(ql.Dequeue());
+Console.WriteLine(ql.Dequeue());
+Console.WriteLine(ql.Dequeue());
 
-linkedList.InsertRangeAfter(linkedList.Head, null);
+ql.Enqueue(8);
+ql.Enqueue(9);
+ql.Enqueue(10);
+ql.Enqueue(11);
+ql.Enqueue(12);
 
-linkedList.InsertBefore(linkedList.Head, 4);
-
-
-foreach (int i in linkedList)
-    Console.Write(i);
 
 Console.WriteLine();
 
-Console.WriteLine(linkedList.Contains(9));
-Console.WriteLine(linkedList.IndexOf(9));
+foreach (int i in ql)
+    Console.Write(i);
+
+Console.WriteLine();
 
 
