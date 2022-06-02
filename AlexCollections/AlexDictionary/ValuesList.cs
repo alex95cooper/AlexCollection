@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 
-namespace AlexCollections.AlexDictionary
+namespace AlexCollections
 {
-    internal class ValueList<TKey, TValue> : IEnumerable<TValue>
+    public class ValuesList<TKey, TValue> : IEnumerable<TValue>
     {
         private readonly KeyValuePair<TKey, TValue>[] _keyValuesPairs;
         private readonly int _count;
 
-        public ValueList(KeyValuePair<TKey, TValue>[] keyValuesPairs, int count)
+        public ValuesList(KeyValuePair<TKey, TValue>[] keyValuesPairs, int count)
         {
             _keyValuesPairs = keyValuesPairs;
             _count = count;

@@ -2,10 +2,10 @@
 {
     public readonly struct KeyValuePair<TKey, TValue>
     {        
-        public KeyValuePair(TValue value, TKey key)
+        public KeyValuePair(TKey key, TValue value)
         {
-            Value = value;
             Key = key;
+            Value = value;            
         }
 
         public TKey Key { get; }
