@@ -9,6 +9,6 @@
         }
 
         public TKey Key { get; }
-        public TValue Value { get; }
+        public TValue Value { get;}
     }
 }

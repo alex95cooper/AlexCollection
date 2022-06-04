@@ -1,62 +1,20 @@
 ﻿using AlexCollections;
 
-AlexStack<int> sl = new();
+AlexDictionary<int, string> dictionaty = new() { { 1, "hello " }, { 2, "Its " }, { 3, "me" }, { 4, ", " }, { 5, "Mario" } };
 
-sl.Push(0);
-sl.Push(1);
-sl.Push(2);
-sl.Push(3); 
-sl.Push(4);
-sl.Push(5);
-sl.Push(6);
-sl.Push(7);
-
-foreach (int i in sl)
-    Console.Write(i);
-
-Console.WriteLine();
-Console.WriteLine();
-
-Console.WriteLine(sl.Pop());
-Console.WriteLine(sl.Pop());
+foreach (var item in dictionaty)
+    Console.Write(item.Value);
 
 Console.WriteLine();
 
-AlexQueue<int> ql = new();
+Console.WriteLine(dictionaty[5]);
 
-ql.Enqueue(0);
-ql.Enqueue(1);
-ql.Enqueue(2);
-ql.Enqueue(3);
-ql.Enqueue(4);
-ql.Enqueue(5);
-ql.Enqueue(6);
-ql.Enqueue(7);
+if (!dictionaty.TryGetValue(6, out string name))
+    Console.WriteLine("Im not exist" + name);
 
-foreach (int i in ql)
-    Console.Write(i);
+Console.WriteLine(dictionaty.ContainsValue("Mario"));
 
-Console.WriteLine();
+Console.WriteLine(dictionaty.TryAdd(5, "!"));
 
-Console.WriteLine(ql.Dequeue());
-Console.WriteLine(ql.Dequeue());
-Console.WriteLine(ql.Dequeue());
-Console.WriteLine(ql.Dequeue());
-Console.WriteLine(ql.Dequeue());
-Console.WriteLine(ql.Dequeue());
-
-ql.Enqueue(8);
-ql.Enqueue(9);
-ql.Enqueue(10);
-ql.Enqueue(11);
-ql.Enqueue(12);
-
-
-Console.WriteLine();
-
-foreach (int i in ql)
-    Console.Write(i);
-
-Console.WriteLine();
 
 
