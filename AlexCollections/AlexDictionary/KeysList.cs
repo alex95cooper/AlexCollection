@@ -4,20 +4,18 @@ namespace AlexCollections
 {
     public class KeysList<TKey, TValue> : IEnumerable<TKey>
     {
-        private readonly KeyValuePair<TKey, TValue>[] _keyValuesPairs;
-        private readonly int _count;
+        private readonly AlexDictionary<TKey, TValue> _dictionary;
 
-        public KeysList(KeyValuePair<TKey, TValue>[] keyValuesPairs, int count) 
+        public KeysList(AlexDictionary<TKey, TValue> dictionary)
         {
-            _keyValuesPairs = keyValuesPairs;
-            _count = count;
+            _dictionary = dictionary;
         }
 
         #region Enumerable
 
         public IEnumerator<TKey> GetEnumerator()
         {
-            return new KeysEnumerator(_keyValuesPairs, _count);
+            return new KeysEnumerator(_dictionary);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -29,24 +27,25 @@ namespace AlexCollections
 
         public class KeysEnumerator : IEnumerator<TKey>
         {
-            private readonly KeyValuePair<TKey, TValue>[] _keyValuesPairs;
-            private readonly int _count;
+            private readonly AlexDictionary<TKey, TValue> _dictionary;
+            private readonly int _dictionaryVersion;
 
-            private int _counter;
+            private int _counter = -1;
 
-            public KeysEnumerator(KeyValuePair<TKey, TValue>[] keyValuesPairs, int count)
+            public KeysEnumerator(AlexDictionary<TKey, TValue> dictionary)
             {
-                _keyValuesPairs = keyValuesPairs;
-                _count = count;
+                _dictionary = dictionary;
+                _dictionaryVersion = dictionary.Version;
             }
 
-            public TKey Current => _keyValuesPairs[_counter].Key;
+            public TKey Current => _dictionary.ElementsArray[_counter].Key;
 
             object IEnumerator.Current => Current;
 
             public bool MoveNext()
             {
-                if (_counter < _count)
+                EnsureDictionaryNotOutdated();
+                if (_counter < _dictionary.Count - 1)
                 {
                     _counter++;
                     return true;
@@ -58,11 +57,20 @@ namespace AlexCollections
 
             public void Reset()
             {
-                _counter = 0;
+                EnsureDictionaryNotOutdated();
+                _counter = -1;
             }
 
             public void Dispose()
             {
+            }
+
+            private void EnsureDictionaryNotOutdated()
+            {
+                if (_dictionaryVersion != _dictionary.Version)
+                {
+                    throw new InvalidOperationException("Dictionary was changed");
+                }
             }
         }
     }

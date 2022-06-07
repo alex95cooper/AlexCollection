@@ -21,7 +21,7 @@ namespace AlexCollections
 
         public bool MoveNext()
         {
-            if (_counter < _count)
+            if (_counter < _count - 1)
             {
                 _counter++;
                 return true;

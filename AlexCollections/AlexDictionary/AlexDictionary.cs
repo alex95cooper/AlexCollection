@@ -8,25 +8,38 @@ namespace AlexCollections
 
         private readonly IAlexComparer<TKey> _comparer;
 
-        private int _count;
-        private KeyValuePair<TKey, TValue>[] _elementsArray;
+        private KeysList<TKey, TValue> _keys = null;
+        private ValuesList<TKey, TValue> _values = null;
 
         public AlexDictionary(IAlexComparer<TKey> comparer = null)
         {
             _comparer = DefaultAlexComparer<TKey>.GetComparerOrDefault(comparer);
-            _elementsArray = new KeyValuePair<TKey, TValue>[InitialSize];
+            ElementsArray = new KeyValuePair<TKey, TValue>[InitialSize];
         }
 
-        public int Count => _count;
-        public KeysList<TKey, TValue> Keys => new(_elementsArray, _count);
-        public ValuesList<TKey, TValue> Values => new(_elementsArray, _count);
+        internal KeyValuePair<TKey, TValue>[] ElementsArray { get; private set; }
+        internal int Version { get; private set; }
+
+        public KeysList<TKey, TValue> Keys => _keys ??= new(this);
+        public ValuesList<TKey, TValue> Values => _values ??= new(this);
+
+        public int Count { get; private set; }
+
         public TValue this[TKey key]
         {
             get
             {
-                (TValue value, int index) = GetValueWithIndex(key);
-                EnsureKeyExistAtIndex(index);
-                return value;
+                var valueWithIndex = GetValueWithIndex(key);
+                EnsureKeyExistAtIndex(valueWithIndex.Index);
+                return valueWithIndex.Value;
+            }
+
+            set
+            {
+                var valueWithIndex = GetValueWithIndex(key);
+                EnsureKeyExistAtIndex(valueWithIndex.Index);
+                ElementsArray[valueWithIndex.Index].Value = value;
+                Version++;
             }
         }
 
@@ -34,7 +47,7 @@ namespace AlexCollections
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            return new AlexDictionaryEnumerator<TKey, TValue>(_elementsArray, _count);
+            return new AlexDictionaryEnumerator<TKey, TValue>(ElementsArray, Count);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -48,32 +61,30 @@ namespace AlexCollections
         {
             EnsureKeyIsNotNull(key);
             EnsureKeyDoesNotRepeat(key);
-
-            if (_count == _elementsArray.Length)
-            {
-                ArrayResizer<KeyValuePair<TKey, TValue>>.Resize(_elementsArray.Length + InitialSize, _elementsArray);
-            } 
-
-            _elementsArray[_count++] = new KeyValuePair<TKey, TValue>(key, value);
+            AddAtValidKey(key, value);
         }
 
         public bool TryAdd(TKey key, TValue value)
         {
-            try
-            {
-                Add(key, value);
-                return true;
-            }
-            catch
+            if (key == null)
             {
                 return false;
             }
+
+            if (!CheckIfKeyDoesNotRepeat(key))
+            {
+                return false;
+            }
+
+            AddAtValidKey(key, value);
+            return true;
         }
 
         public void Clear()
         {
-            _elementsArray = new KeyValuePair<TKey, TValue>[InitialSize];
-            _count = 0;
+            ElementsArray = new KeyValuePair<TKey, TValue>[InitialSize];
+            Count = 0;
+            Version = 0;
         }
 
         public bool ContainsKey(TKey key)
@@ -125,6 +136,11 @@ namespace AlexCollections
 
         private void EnsureKeyDoesNotRepeat(TKey key)
         {
+            if (_comparer is not DefaultAlexComparer<TKey>)
+            {
+                EnsureKeyDoesNotRepeat(key.GetHashCode());
+            }
+
             foreach (var pair in this)
             {
                 if (_comparer.Compare(pair.Key, key) == 0)
@@ -132,6 +148,62 @@ namespace AlexCollections
                     throw new ArgumentException("This key already exists.");
                 }
             }
+        }
+
+        private void EnsureKeyDoesNotRepeat(int keysHashCode)
+        {
+            foreach (var pair in this)
+            {
+                if (pair.Key.GetHashCode() == keysHashCode)
+                {
+                    throw new ArgumentException("This key already exists.");
+                }
+            }
+        }
+
+        private bool CheckIfKeyDoesNotRepeat(TKey key)
+        {
+            if (_comparer is not DefaultAlexComparer<TKey>)
+            {
+                if (!CheckIfKeyDoesNotRepeat(key.GetHashCode()))
+                {
+                    return false;
+                }
+            }
+
+            foreach (var pair in this)
+            {
+                if (_comparer.Compare(pair.Key, key) == 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool CheckIfKeyDoesNotRepeat(int keysHashCode)
+        {
+            foreach (var pair in this)
+            {
+                if (pair.Key.GetHashCode() == keysHashCode)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void AddAtValidKey(TKey key, TValue value)
+        {
+            if (Count == ElementsArray.Length)
+            {
+                ArrayResizer<KeyValuePair<TKey, TValue>>.Resize(ElementsArray.Length + InitialSize, ElementsArray);
+            }
+
+            ElementsArray[Count++] = new KeyValuePair<TKey, TValue>(key, value);
+            Version++;
         }
 
         private static void EnsureKeyExistAtIndex(int index)
@@ -142,13 +214,13 @@ namespace AlexCollections
             }
         }
 
-        private (TValue, int) GetValueWithIndex(TKey key)
+        private (TValue Value, int Index) GetValueWithIndex(TKey key)
         {
-            for (int counter = 0; counter < _count; counter++)
+            for (int counter = 0; counter < Count; counter++)
             {
-                if (_comparer.Compare(key, _elementsArray[counter].Key) == 0)
+                if (_comparer.Compare(key, ElementsArray[counter].Key) == 0)
                 {
-                    return (_elementsArray[counter].Value, counter);
+                    return (ElementsArray[counter].Value, counter);
                 }
             }
 
@@ -158,12 +230,13 @@ namespace AlexCollections
         private void RemoveAt(int index)
         {
             EnsureKeyExistAtIndex(index);
-            for (int counter = index; counter < _count; counter++)
+            for (int counter = index; counter < Count; counter++)
             {
-                _elementsArray[counter] = _elementsArray[counter + 1];
+                ElementsArray[counter] = ElementsArray[counter + 1];
             }
 
-            _count--;
+            Count--;
+            Version++;
         }
     }
 }
