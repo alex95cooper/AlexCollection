@@ -147,8 +147,8 @@ public class ClassKey
 
     public bool Equals(ClassKey classKey)
     {
-        return classKey.FirstLetter == FirstLetter 
-            && classKey.SecondLetter == SecondLetter 
+        return classKey.FirstLetter == FirstLetter
+            && classKey.SecondLetter == SecondLetter
             && classKey.LastLetter == LastLetter;
     }
 

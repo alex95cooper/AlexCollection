@@ -134,30 +134,11 @@ namespace AlexCollections
 
         private bool CheckIfKeyExists(TKey key)
         {
-            if (_comparer is not DefaultAlexComparer<TKey>)
-            {
-                if (CheckIfKeyExists(key, key.GetHashCode()))
-                {
-                    return true;
-                }
-            }
-
             foreach (var pair in this)
             {
-                if ((_comparer.Compare(pair.Key, key) == 0) && pair.Key.Equals(key))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private bool CheckIfKeyExists(TKey key, int keysHashCode)
-        {
-            foreach (var pair in this)
-            {
-                if ((pair.Key.GetHashCode() == keysHashCode) && pair.Key.Equals(key))
+                if (pair.Key.GetHashCode() == key.GetHashCode()
+                    && (_comparer.Compare(pair.Key, key) == 0)
+                    && pair.Key.Equals(key))
                 {
                     return true;
                 }
@@ -189,7 +170,8 @@ namespace AlexCollections
         {
             for (int counter = 0; counter < Count; counter++)
             {
-                if ((_comparer.Compare(key, ElementsArray[counter].Key) == 0)
+                if (ElementsArray[counter].Key.GetHashCode() == key.GetHashCode()
+                    && (_comparer.Compare(key, ElementsArray[counter].Key) == 0)
                     && ElementsArray[counter].Key.Equals(key))
                 {
                     return (ElementsArray[counter].Value, counter);
