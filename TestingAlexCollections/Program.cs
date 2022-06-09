@@ -144,6 +144,36 @@ public class ClassKey
     public string SecondLetter => _secondLetter;
     public string LastLetter => _lastLetter;
     public string Word => _firstLetter + _secondLetter + _lastLetter;
+
+    public bool Equals(ClassKey classKey)
+    {
+        return classKey.FirstLetter == FirstLetter 
+            && classKey.SecondLetter == SecondLetter 
+            && classKey.LastLetter == LastLetter;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+        if (obj.GetType() != GetType())
+        {
+            return false;
+        }
+
+        return Equals((ClassKey)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(FirstLetter, SecondLetter, LastLetter);
+    }
 }
 
 public class MyComparer : IAlexComparer<ClassKey>
@@ -154,22 +184,12 @@ public class MyComparer : IAlexComparer<ClassKey>
         {
             return CompareNullReference(x, y);
         }
-
-        int xHashCode = x.FirstLetter.GetHashCode() * 2 + x.SecondLetter.GetHashCode() * 3 + x.LastLetter.GetHashCode() * 4;
-        int yHashCode = y.FirstLetter.GetHashCode() * 2 + y.SecondLetter.GetHashCode() * 3 + y.LastLetter.GetHashCode() * 4; 
-
-        if (xHashCode > yHashCode)
-        {
-            return 1;
-        }
-        else if (xHashCode < yHashCode)
-        {
-            return -1;
-        }
-        else
+        if (x.Equals(y))
         {
             return 0;
-        }        
+        }
+
+        return -1;
     }
 
     private static int CompareNullReference(ClassKey? x, ClassKey? y)

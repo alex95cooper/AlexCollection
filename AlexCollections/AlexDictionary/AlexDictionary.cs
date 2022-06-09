@@ -136,15 +136,15 @@ namespace AlexCollections
         {
             if (_comparer is not DefaultAlexComparer<TKey>)
             {
-                if (CheckIfKeyExists(key.GetHashCode()))
+                if (CheckIfKeyExists(key, key.GetHashCode()))
                 {
-                    return true;                   
+                    return true;
                 }
             }
 
             foreach (var pair in this)
             {
-                if (_comparer.Compare(pair.Key, key) == 0)
+                if ((_comparer.Compare(pair.Key, key) == 0) && pair.Key.Equals(key))
                 {
                     return true;
                 }
@@ -153,11 +153,11 @@ namespace AlexCollections
             return false;
         }
 
-        private bool CheckIfKeyExists(int keysHashCode)
+        private bool CheckIfKeyExists(TKey key, int keysHashCode)
         {
             foreach (var pair in this)
             {
-                if (pair.Key.GetHashCode() == keysHashCode)
+                if ((pair.Key.GetHashCode() == keysHashCode) && pair.Key.Equals(key))
                 {
                     return true;
                 }
@@ -189,7 +189,8 @@ namespace AlexCollections
         {
             for (int counter = 0; counter < Count; counter++)
             {
-                if (_comparer.Compare(key, ElementsArray[counter].Key) == 0)
+                if ((_comparer.Compare(key, ElementsArray[counter].Key) == 0)
+                    && ElementsArray[counter].Key.Equals(key))
                 {
                     return (ElementsArray[counter].Value, counter);
                 }
