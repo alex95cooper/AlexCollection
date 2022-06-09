@@ -1,62 +1,206 @@
 ﻿using AlexCollections;
+//---------------Using String Key----------------------//
+Console.WriteLine("<--------------Use string------------->");
+AlexDictionary<string, string> dictionaty = new() { { "One", "hello " }, { "Two", "Its " }, { "Three", "me" }, { "Four", ", " }, { "Five", "Mario" } };
 
-AlexStack<int> sl = new();
+foreach (var item in dictionaty)
+    Console.Write(item.Value);
 
-sl.Push(0);
-sl.Push(1);
-sl.Push(2);
-sl.Push(3); 
-sl.Push(4);
-sl.Push(5);
-sl.Push(6);
-sl.Push(7);
+Console.WriteLine();
 
-foreach (int i in sl)
-    Console.Write(i);
+var mykeylist = dictionaty.Keys;
+
+foreach (var key in mykeylist)
+    Console.Write(key);
+
+Console.WriteLine();
+Console.WriteLine(dictionaty["Five"]);
+
+Console.WriteLine();
+
+if (!dictionaty.TryGetValue("Six", out string name))
+    Console.WriteLine("Im not exist" + name);
+
+Console.WriteLine(dictionaty.ContainsValue("Mario"));
+
+Console.WriteLine();
+
+foreach (var key in mykeylist)
+{
+    Console.Write(key);
+
+    if (key == "Tree")
+    {
+        dictionaty.Remove(key);
+    }
+}
+Console.WriteLine();
+Console.WriteLine();
+
+//-------------------Using StructKey----------------------//
+Console.WriteLine("<--------------Use Struct Key------------->");
+
+AlexDictionary<StructKey, string> structDictionaty = new();
+
+structDictionaty.Add(new StructKey(1, 2, 3), "hello ");
+structDictionaty.Add(new StructKey(2, 4, 8), "Its ");
+structDictionaty.Add(new StructKey(3, 9, 27), "me");
+structDictionaty.Add(new StructKey(4, 16, 64), ", ");
+structDictionaty.Add(new StructKey(5, 25, 125), "Mario");
+
+foreach (var item in structDictionaty)
+    Console.Write(item.Value);
+
+Console.WriteLine();
+
+var myStructKeylist = structDictionaty.Keys;
+
+foreach (var key in myStructKeylist)
+    Console.WriteLine(key.Number);
+
+Console.WriteLine();
+Console.WriteLine(structDictionaty[new StructKey(5, 25, 125)]);
+
+Console.WriteLine();
+
+if (structDictionaty.TryGetValue(new StructKey(5, 25, 125), out string nameTwo))
+    Console.WriteLine("Im exist, my name is " + nameTwo);
+
+Console.WriteLine(structDictionaty.ContainsValue("Mario"));
+
+Console.WriteLine();
+
+foreach (StructKey key in myStructKeylist)
+{
+    Console.Write(key.Number);
+}
 
 Console.WriteLine();
 Console.WriteLine();
 
-Console.WriteLine(sl.Pop());
-Console.WriteLine(sl.Pop());
+//-------------------Using ClassKey----------------------//
+Console.WriteLine("<--------------Use Struct Key------------->");
+MyComparer myComparer = new();
+AlexDictionary<ClassKey, string> classDictionaty = new(myComparer);
+
+classDictionaty.Add(new ClassKey('A', 'B', 'C'), "hello ");
+classDictionaty.Add(new ClassKey('A', 'C', 'D'), "Its ");
+classDictionaty.Add(new ClassKey('B', 'C', 'D'), "me");
+classDictionaty.Add(new ClassKey('B', 'D', 'E'), ", ");
+classDictionaty.Add(new ClassKey('C', 'D', 'E'), "Mario");
+
+foreach (var item in classDictionaty)
+    Console.Write(item.Value);
 
 Console.WriteLine();
 
-AlexQueue<int> ql = new();
+var myClassKeylist = classDictionaty.Keys;
 
-ql.Enqueue(0);
-ql.Enqueue(1);
-ql.Enqueue(2);
-ql.Enqueue(3);
-ql.Enqueue(4);
-ql.Enqueue(5);
-ql.Enqueue(6);
-ql.Enqueue(7);
+foreach (var key in myClassKeylist)
+    Console.WriteLine(key.Word);
 
-foreach (int i in ql)
-    Console.Write(i);
+Console.WriteLine();
+Console.WriteLine(classDictionaty[new ClassKey('C', 'D', 'E')]);
 
 Console.WriteLine();
 
-Console.WriteLine(ql.Dequeue());
-Console.WriteLine(ql.Dequeue());
-Console.WriteLine(ql.Dequeue());
-Console.WriteLine(ql.Dequeue());
-Console.WriteLine(ql.Dequeue());
-Console.WriteLine(ql.Dequeue());
+if (classDictionaty.TryGetValue(new ClassKey('C', 'D', 'E'), out string nameThree))
+    Console.WriteLine("Im exist, my name is " + nameThree);
 
-ql.Enqueue(8);
-ql.Enqueue(9);
-ql.Enqueue(10);
-ql.Enqueue(11);
-ql.Enqueue(12);
-
+Console.WriteLine(classDictionaty.ContainsValue("Mario"));
 
 Console.WriteLine();
 
-foreach (int i in ql)
-    Console.Write(i);
+public struct StructKey
+{
+    private readonly int _firstNumber;
+    private readonly int _secondNumber;
+    private readonly int _lastNumber;
 
-Console.WriteLine();
+    public StructKey(int firstNumber, int secondNumber, int lastNumber)
+    {
+        _firstNumber = firstNumber;
+        _secondNumber = secondNumber;
+        _lastNumber = lastNumber;
+    }
+
+    public string Number => _firstNumber.ToString() + "_" + _secondNumber.ToString() + "_" + _lastNumber.ToString();
+}
+
+public class ClassKey
+{
+    private readonly string _firstLetter;
+    private readonly string _secondLetter;
+    private readonly string _lastLetter;
+
+    public ClassKey(char firstFigure, char secondFigure, char lastFigure)
+    {
+        _firstLetter = firstFigure.ToString();
+        _secondLetter = secondFigure.ToString();
+        _lastLetter = lastFigure.ToString();
+    }
+
+    public string FirstLetter => _firstLetter;
+    public string SecondLetter => _secondLetter;
+    public string LastLetter => _lastLetter;
+    public string Word => _firstLetter + _secondLetter + _lastLetter;
+
+    public bool Equals(ClassKey classKey)
+    {
+        return classKey.FirstLetter == FirstLetter
+            && classKey.SecondLetter == SecondLetter
+            && classKey.LastLetter == LastLetter;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+        if (obj.GetType() != GetType())
+        {
+            return false;
+        }
+
+        return Equals((ClassKey)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(FirstLetter, SecondLetter, LastLetter);
+    }
+}
+
+public class MyComparer : IAlexComparer<ClassKey>
+{
+    public int Compare(ClassKey x, ClassKey y)
+    {
+        if (x == null || y == null)
+        {
+            return CompareNullReference(x, y);
+        }
+        if (x.Equals(y))
+        {
+            return 0;
+        }
+
+        return -1;
+    }
+
+    private static int CompareNullReference(ClassKey? x, ClassKey? y)
+    {
+        if (x == null && y == null)
+            return 0;
+        else if (x == null)
+            return -1;
+        else
+            return 1;
+    }
+}
 
 

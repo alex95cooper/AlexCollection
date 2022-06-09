@@ -26,7 +26,7 @@
             return comparer ?? new DefaultAlexComparer<T>();
         }
 
-        private static int CompareNullReference(T x, T y)
+        public static int CompareNullReference(T x, T y)
         {
             if (x == null && y == null)
                 return 0;
