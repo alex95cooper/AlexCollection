@@ -33,7 +33,6 @@ namespace AlexCollections
                 EnsureKeyExistAtIndex(valueWithIndex.Index);
                 return valueWithIndex.Value;
             }
-
             set
             {
                 var valueWithIndex = GetValueWithIndex(key);
@@ -60,23 +59,22 @@ namespace AlexCollections
         public void Add(TKey key, TValue value)
         {
             EnsureKeyIsNotNull(key);
-            EnsureKeyDoesNotRepeat(key);
-            AddAtValidKey(key, value);
+            if (CheckIfKeyExists(key))
+            {
+                throw new ArgumentException("This key already exists.");
+            }
+
+            AddValidKeyValue(key, value);
         }
 
         public bool TryAdd(TKey key, TValue value)
         {
-            if (key == null)
+            if (key == null || CheckIfKeyExists(key))
             {
                 return false;
             }
 
-            if (!CheckIfKeyDoesNotRepeat(key))
-            {
-                return false;
-            }
-
-            AddAtValidKey(key, value);
+            AddValidKeyValue(key, value);
             return true;
         }
 
@@ -134,40 +132,13 @@ namespace AlexCollections
             }
         }
 
-        private void EnsureKeyDoesNotRepeat(TKey key)
+        private bool CheckIfKeyExists(TKey key)
         {
             if (_comparer is not DefaultAlexComparer<TKey>)
             {
-                EnsureKeyDoesNotRepeat(key.GetHashCode());
-            }
-
-            foreach (var pair in this)
-            {
-                if (_comparer.Compare(pair.Key, key) == 0)
+                if (CheckIfKeyExists(key.GetHashCode()))
                 {
-                    throw new ArgumentException("This key already exists.");
-                }
-            }
-        }
-
-        private void EnsureKeyDoesNotRepeat(int keysHashCode)
-        {
-            foreach (var pair in this)
-            {
-                if (pair.Key.GetHashCode() == keysHashCode)
-                {
-                    throw new ArgumentException("This key already exists.");
-                }
-            }
-        }
-
-        private bool CheckIfKeyDoesNotRepeat(TKey key)
-        {
-            if (_comparer is not DefaultAlexComparer<TKey>)
-            {
-                if (!CheckIfKeyDoesNotRepeat(key.GetHashCode()))
-                {
-                    return false;
+                    return true;                   
                 }
             }
 
@@ -175,27 +146,27 @@ namespace AlexCollections
             {
                 if (_comparer.Compare(pair.Key, key) == 0)
                 {
-                    return false;
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
 
-        private bool CheckIfKeyDoesNotRepeat(int keysHashCode)
+        private bool CheckIfKeyExists(int keysHashCode)
         {
             foreach (var pair in this)
             {
                 if (pair.Key.GetHashCode() == keysHashCode)
                 {
-                    return false;
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
 
-        private void AddAtValidKey(TKey key, TValue value)
+        private void AddValidKeyValue(TKey key, TValue value)
         {
             if (Count == ElementsArray.Length)
             {
