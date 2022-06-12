@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 
 namespace AlexCollections
 {
@@ -10,10 +6,15 @@ namespace AlexCollections
     {
         private const string WrongIndexExceptionMessage = "The collection does not contain the entered index or value.";
         private const int InitialSize = 100;
+        private const int IndexNotChanged = -1;
 
         private readonly IAlexComparer<T> _comparer;
 
         private T[] _elementsArray;
+
+        public delegate void EventHandler(object sender, EventArgs e);
+
+        public event EventHandler<EventArgs> CollectionChanged;
 
         public AlexObservableCollection(IAlexComparer<T> comparer = null)
         {
@@ -25,12 +26,12 @@ namespace AlexCollections
 
         public T this[int index]
         {
-            get 
+            get
             {
                 EnsureIndexIsValid(index);
-                return _elementsArray[index]; 
+                return _elementsArray[index];
             }
-            set 
+            set
             {
                 EnsureIndexIsValid(index);
                 _elementsArray[index] = value;
@@ -56,6 +57,8 @@ namespace AlexCollections
             ResizeIfNeeded(Count + 1);
             _elementsArray[Count] = value;
             Count++;
+
+            SendEvent(Action.Add, value, default, Count - 1, IndexNotChanged);
         }
 
         public void Clear()
@@ -64,18 +67,12 @@ namespace AlexCollections
             Count = 0;
         }
 
-        public bool Contains(T value)
-        {
-            return IndexOf(value) >= 0;
-        }
+        public bool Contains(T value) => IndexOf(value) >= 0;
 
         public void Insert(int index, T value)
         {
-            if (index < 0 || index > Count)
-            {
-                throw new ArgumentException(WrongIndexExceptionMessage);
-            }
-            else if (index == Count)
+            EnsureIndexIsValid(index);
+            if (index == Count)
             {
                 Add(value);
             }
@@ -121,11 +118,7 @@ namespace AlexCollections
 
         public void RemoveAt(int index)
         {
-            if (index < 0 || index >= Count)
-            {
-                throw new ArgumentException(WrongIndexExceptionMessage);
-            }
-
+            EnsureIndexIsValid(index);
             for (int counter = index; counter < Count; counter++)
             {
                 _elementsArray[counter] = _elementsArray[counter + 1];
@@ -148,6 +141,11 @@ namespace AlexCollections
             {
                 _elementsArray = ArrayResizer<T>.Resize(_elementsArray.Length + InitialSize, _elementsArray);
             }
+        }
+
+        private void SendEvent(Action action, T newValue, T oldValue, int newIndex, int oldIndex)
+        {
+            CollectionChanged?.Invoke(this, new CollectionChangedEventArgs<T>(action, newValue, oldValue, newIndex, oldIndex));
         }
     }
 }
