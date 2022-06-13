@@ -1,12 +1,12 @@
 ﻿namespace AlexCollections
 {
-    internal enum Action
+    public enum Action
     {
         Add,
-        Clear,
+        Сlear,
         Insert,
         Move,
         Remove,
-        RemoveAtIndex
+        SetNewValue
     }
 }

@@ -12,9 +12,9 @@ namespace AlexCollections
 
         private T[] _elementsArray;
 
-        public delegate void EventHandler(object sender, EventArgs e);
+        public delegate void OnCollectionChangedHandler(object sender, OnCollectionChangedEventArgs<T> e);
 
-        public event EventHandler<EventArgs> CollectionChanged;
+        public event OnCollectionChangedHandler CollectionChanged;
 
         public AlexObservableCollection(IAlexComparer<T> comparer = null)
         {
@@ -34,7 +34,9 @@ namespace AlexCollections
             set
             {
                 EnsureIndexIsValid(index);
+                T oldValue = _elementsArray[index];
                 _elementsArray[index] = value;
+                OnSomethingHappened(Action.SetNewValue, new AlexList<T> { value }, new AlexList<T> { oldValue }, index, index);
             }
         }
 
@@ -58,13 +60,17 @@ namespace AlexCollections
             _elementsArray[Count] = value;
             Count++;
 
-            SendEvent(Action.Add, value, default, Count - 1, IndexNotChanged);
+            OnSomethingHappened(Action.Add, new AlexList<T> { value }, default, Count - 1, IndexNotChanged);
         }
 
         public void Clear()
         {
+            AlexList<T> oldvalues = new();
+            oldvalues.ElementsArray = _elementsArray;
+            oldvalues.Count = Count;
             _elementsArray = new T[InitialSize];
             Count = 0;
+            OnSomethingHappened(Action.Сlear, default, oldvalues, IndexNotChanged, IndexNotChanged);
         }
 
         public bool Contains(T value) => IndexOf(value) >= 0;
@@ -86,6 +92,7 @@ namespace AlexCollections
 
                 _elementsArray[index] = value;
                 Count++;
+                OnSomethingHappened(Action.Insert, new AlexList<T> { value }, default, index, IndexNotChanged);
             }
         }
 
@@ -108,12 +115,15 @@ namespace AlexCollections
             T secondValue = _elementsArray[secondIndex];
             _elementsArray[secondIndex] = firstValue;
             _elementsArray[firstIndex] = secondValue;
+
+            OnSomethingHappened(Action.Move, new AlexList<T> { firstValue }, new AlexList<T> { secondValue }, secondIndex, firstIndex);
         }
 
         public void Remove(T value)
         {
             int index = IndexOf(value);
             RemoveAt(index);
+            OnSomethingHappened(Action.Remove, default, new AlexList<T> { value }, IndexNotChanged, index);
         }
 
         public void RemoveAt(int index)
@@ -125,6 +135,7 @@ namespace AlexCollections
             }
 
             Count--;
+            OnSomethingHappened(Action.Remove, default, new AlexList<T> { _elementsArray[index] }, IndexNotChanged, index);
         }
 
         private void EnsureIndexIsValid(int index)
@@ -143,9 +154,9 @@ namespace AlexCollections
             }
         }
 
-        private void SendEvent(Action action, T newValue, T oldValue, int newIndex, int oldIndex)
+        private void OnSomethingHappened(Action action, AlexList<T> newValue, AlexList<T> oldValue, int newIndex, int oldIndex)
         {
-            CollectionChanged?.Invoke(this, new CollectionChangedEventArgs<T>(action, newValue, oldValue, newIndex, oldIndex));
+            CollectionChanged?.Invoke(this, new OnCollectionChangedEventArgs<T>(action, newValue, oldValue, newIndex, oldIndex));
         }
     }
 }
