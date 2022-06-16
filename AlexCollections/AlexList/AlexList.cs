@@ -12,9 +12,9 @@ namespace AlexCollections
             Clear();
         }
 
-        internal T[] ElementsArray { get; set; }
+        internal T[] ElementsArray { get; private set; }
 
-        public int Count { get; internal set; }
+        public int Count { get; private set; }
 
         public T this[int index]
         {
@@ -34,7 +34,7 @@ namespace AlexCollections
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AlexListEnumerator<T>(ElementsArray, Count);
+            return new AlexEnumerator<T>(ElementsArray, Count);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

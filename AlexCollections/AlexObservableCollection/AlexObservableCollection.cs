@@ -1,20 +1,15 @@
 ﻿using System.Collections;
+using AlexCollections.Extension;
 
 namespace AlexCollections
 {
     public class AlexObservableCollection<T> : IEnumerable<T>
     {
-        private const string WrongIndexExceptionMessage = "The collection does not contain the entered index or value.";
         private const int InitialSize = 100;
-        private const int IndexNotChanged = -1;
 
         private readonly IAlexComparer<T> _comparer;
 
         private T[] _elementsArray;
-
-        public delegate void OnCollectionChangedHandler(object sender, OnCollectionChangedEventArgs<T> e);
-
-        public event OnCollectionChangedHandler CollectionChanged;
 
         public AlexObservableCollection(IAlexComparer<T> comparer = null)
         {
@@ -22,7 +17,7 @@ namespace AlexCollections
             _elementsArray = new T[InitialSize];
         }
 
-        public int Count { get; internal set; }
+        public int Count { get; private set; }
 
         public T this[int index]
         {
@@ -36,15 +31,19 @@ namespace AlexCollections
                 EnsureIndexIsValid(index);
                 T oldValue = _elementsArray[index];
                 _elementsArray[index] = value;
-                OnSomethingHappened(Action.SetNewValue, new AlexList<T> { value }, new AlexList<T> { oldValue }, index, index);
+                OnCollectionChanged(Action.Replace, value, oldValue, index, index);
             }
         }
+
+        public delegate void CollectionChangedHandler(object sender, CollectionChangedEventArgs<T> e);
+
+        public event CollectionChangedHandler CollectionChanged;
 
         #region Enumerable
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AlexListEnumerator<T>(_elementsArray, Count);
+            return new AlexEnumerator<T>(_elementsArray, Count);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -59,18 +58,15 @@ namespace AlexCollections
             ResizeIfNeeded(Count + 1);
             _elementsArray[Count] = value;
             Count++;
-
-            OnSomethingHappened(Action.Add, new AlexList<T> { value }, default, Count - 1, IndexNotChanged);
+            OnCollectionChanged(Action.Add, newValue: value, newIndex: Count - 1);
         }
 
         public void Clear()
         {
-            AlexList<T> oldvalues = new();
-            oldvalues.ElementsArray = _elementsArray;
-            oldvalues.Count = Count;
+            AlexList<T> oldValues = this.ToAlexList();
             _elementsArray = new T[InitialSize];
             Count = 0;
-            OnSomethingHappened(Action.Сlear, default, oldvalues, IndexNotChanged, IndexNotChanged);
+            OnCollectionChanged(Action.Сlear, oldValues: oldValues);
         }
 
         public bool Contains(T value) => IndexOf(value) >= 0;
@@ -92,7 +88,7 @@ namespace AlexCollections
 
                 _elementsArray[index] = value;
                 Count++;
-                OnSomethingHappened(Action.Insert, new AlexList<T> { value }, default, index, IndexNotChanged);
+                OnCollectionChanged(Action.Add, newValue: value, newIndex: index);
             }
         }
 
@@ -115,15 +111,15 @@ namespace AlexCollections
             T secondValue = _elementsArray[secondIndex];
             _elementsArray[secondIndex] = firstValue;
             _elementsArray[firstIndex] = secondValue;
-
-            OnSomethingHappened(Action.Move, new AlexList<T> { firstValue }, new AlexList<T> { secondValue }, secondIndex, firstIndex);
+            OnCollectionChanged(Action.Move, firstValue, secondValue, secondIndex, firstIndex);
         }
 
         public void Remove(T value)
         {
             int index = IndexOf(value);
+            EnsureValueIsValid(index);
             RemoveAt(index);
-            OnSomethingHappened(Action.Remove, default, new AlexList<T> { value }, IndexNotChanged, index);
+            OnCollectionChanged(Action.Remove, oldValue: value, oldIndex: index);
         }
 
         public void RemoveAt(int index)
@@ -135,14 +131,22 @@ namespace AlexCollections
             }
 
             Count--;
-            OnSomethingHappened(Action.Remove, default, new AlexList<T> { _elementsArray[index] }, IndexNotChanged, index);
+            OnCollectionChanged(Action.Remove, oldValue: _elementsArray[index], oldIndex: index);
         }
 
         private void EnsureIndexIsValid(int index)
         {
             if (index < 0 || index >= Count)
             {
-                throw new ArgumentException(WrongIndexExceptionMessage);
+                throw new IndexOutOfRangeException();
+            }
+        }
+
+        private static void EnsureValueIsValid(int index)
+        {
+            if (index == -1)
+            {
+                throw new ArgumentException("The collection does not contain the entered value");
             }
         }
 
@@ -154,9 +158,16 @@ namespace AlexCollections
             }
         }
 
-        private void OnSomethingHappened(Action action, AlexList<T> newValue, AlexList<T> oldValue, int newIndex, int oldIndex)
+        private void OnCollectionChanged(Action action, T newValue = default, T oldValue = default, int newIndex = -1, int oldIndex = -1)
         {
-            CollectionChanged?.Invoke(this, new OnCollectionChangedEventArgs<T>(action, newValue, oldValue, newIndex, oldIndex));
+            AlexList<T> newValues = new() { newValue };
+            AlexList<T> oldValues = new() { oldValue };
+            CollectionChanged?.Invoke(this, new CollectionChangedEventArgs<T>(action, newValues, oldValues, newIndex, oldIndex));
+        }
+
+        private void OnCollectionChanged(Action action, AlexList<T> newValues = null, AlexList<T> oldValues = null, int newIndex = -1, int oldIndex = -1)
+        {
+            CollectionChanged?.Invoke(this, new CollectionChangedEventArgs<T>(action, newValues, oldValues, newIndex, oldIndex));
         }
     }
 }

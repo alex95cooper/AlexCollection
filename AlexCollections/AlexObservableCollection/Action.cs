@@ -4,9 +4,8 @@
     {
         Add,
         Сlear,
-        Insert,
         Move,
         Remove,
-        SetNewValue
+        Replace
     }
 }

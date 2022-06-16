@@ -124,7 +124,7 @@ oc.Insert(1, 6);
 oc.Clear();
 
 
-void OcHandler(object sender, OnCollectionChangedEventArgs<int> e)
+void OcHandler(object sender, CollectionChangedEventArgs<int> e)
 {
     if (e.NewValues == null && e.OldValues.Count > 1)
     {

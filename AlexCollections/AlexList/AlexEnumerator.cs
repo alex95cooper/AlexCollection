@@ -2,14 +2,14 @@
 
 namespace AlexCollections
 {
-    public class AlexListEnumerator<T> : IEnumerator<T>
+    public class AlexEnumerator<T> : IEnumerator<T>
     {
         private readonly int _count;
         private readonly T[] _elementsArray;
 
         private int _indexOfElement = -1;
 
-        public AlexListEnumerator(T[] elementsArray, int count)
+        public AlexEnumerator(T[] elementsArray, int count)
         {
             _elementsArray = elementsArray;
             _count = count;
