@@ -1,4 +1,5 @@
 ﻿using AlexCollections;
+
 //---------------Using String Key----------------------//
 Console.WriteLine("<--------------Use string------------->");
 AlexDictionary<string, string> dictionaty = new() { { "One", "hello " }, { "Two", "Its " }, { "Three", "me" }, { "Four", ", " }, { "Five", "Mario" } };

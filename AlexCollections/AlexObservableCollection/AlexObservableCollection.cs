@@ -117,7 +117,11 @@ namespace AlexCollections
         public void Remove(T value)
         {
             int index = IndexOf(value);
-            EnsureValueIsValid(index);
+            if (index == -1)
+            {
+                throw new ArgumentException("The collection does not contain the entered value");
+            }
+
             RemoveAt(index);
             OnCollectionChanged(Action.Remove, oldValue: value, oldIndex: index);
         }
@@ -142,14 +146,6 @@ namespace AlexCollections
             }
         }
 
-        private static void EnsureValueIsValid(int index)
-        {
-            if (index == -1)
-            {
-                throw new ArgumentException("The collection does not contain the entered value");
-            }
-        }
-
         private void ResizeIfNeeded(int count)
         {
             if (count >= _elementsArray.Length)
@@ -160,9 +156,7 @@ namespace AlexCollections
 
         private void OnCollectionChanged(Action action, T newValue = default, T oldValue = default, int newIndex = -1, int oldIndex = -1)
         {
-            AlexList<T> newValues = new() { newValue };
-            AlexList<T> oldValues = new() { oldValue };
-            CollectionChanged?.Invoke(this, new CollectionChangedEventArgs<T>(action, newValues, oldValues, newIndex, oldIndex));
+            OnCollectionChanged(action, new AlexList<T>() { newValue }, new AlexList<T>() { oldValue }, newIndex, oldIndex);
         }
 
         private void OnCollectionChanged(Action action, AlexList<T> newValues = null, AlexList<T> oldValues = null, int newIndex = -1, int oldIndex = -1)
