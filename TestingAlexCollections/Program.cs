@@ -1,4 +1,5 @@
 ﻿using AlexCollections;
+
 //---------------Using String Key----------------------//
 Console.WriteLine("<--------------Use string------------->");
 AlexDictionary<string, string> dictionaty = new() { { "One", "hello " }, { "Two", "Its " }, { "Three", "me" }, { "Four", ", " }, { "Five", "Mario" } };
@@ -111,6 +112,47 @@ Console.WriteLine(classDictionaty.ContainsValue("Mario"));
 
 Console.WriteLine();
 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!---------------Testting ObservableCillection----------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
+Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!---------------Testing ObservableCillection----------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+Console.WriteLine();
+AlexObservableCollection<int> oc = new AlexObservableCollection<int>();
+
+oc.CollectionChanged += OcHandler;
+
+oc.Add(5);
+oc.Add(7);
+oc.Insert(1, 6);
+oc.Clear();
+
+
+void OcHandler(object sender, CollectionChangedEventArgs<int> e)
+{
+    if (e.NewValues == null && e.OldValues.Count > 1)
+    {
+        Console.Write($"e --> Action: {e.Action}, NewValue: null, OldValues: ");
+        foreach (var item in e.OldValues)   
+            Console.Write(item);
+        Console.Write($", NewIndex: { e.NewIndex}, OldIndex: { e.OldIndex}.");
+    } 
+    else if (e.NewValues == null && e.OldValues != null)
+    {
+        Console.WriteLine($"e --> Action: {e.Action}, NewValue: null, OldValue: {e.OldValues}, NewIndex: {e.NewIndex}, OldIndex: {e.OldIndex}.");
+    }
+    else if (e.NewValues != null && e.OldValues == null)
+    {
+        Console.WriteLine($"e --> Action: {e.Action}, NewValue: {e.NewValues[0]}, OldValue: null, NewIndex: {e.NewIndex}, OldIndex: {e.OldIndex}.");
+    }
+    else if (e.NewValues != null && e.OldValues != null)
+    {
+        Console.WriteLine($"e --> Action: {e.Action}, NewValue: {e.NewValues[0]}, OldValue: {e.OldValues}, NewIndex: {e.NewIndex}, OldIndex: {e.OldIndex}.");
+    }
+
+    Console.WriteLine();
+}
+
+
+
+
 public struct StructKey
 {
     private readonly int _firstNumber;
@@ -202,5 +244,7 @@ public class MyComparer : IAlexComparer<ClassKey>
             return 1;
     }
 }
+
+
 
 
